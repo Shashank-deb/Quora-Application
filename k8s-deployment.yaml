@@ -1,0 +1,250 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: quora-app
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quora-app-config
+  namespace: quora-app
+data:
+  SPRING_PROFILE: "prod"
+  LOG_LEVEL: "WARN"
+  TZ: "UTC"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: quora-db-secret
+  namespace: quora-app
+type: Opaque
+stringData:
+  SPRING_DATASOURCE_USERNAME: quora_prod_user
+  SPRING_DATASOURCE_PASSWORD: "change_me_in_production"
+  DB_ROOT_PASSWORD: "change_me_in_production"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quora-mysql
+  namespace: quora-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quora-mysql
+  template:
+    metadata:
+      labels:
+        app: quora-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: quora-db-secret
+                  key: DB_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: "quora_db"
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: quora-db-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: quora-db-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pvc
+  namespace: quora-app
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quora-mysql
+  namespace: quora-app
+spec:
+  ports:
+    - port: 3306
+      targetPort: 3306
+  selector:
+    app: quora-mysql
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quora-app
+  namespace: quora-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: quora-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: quora-app
+    spec:
+      containers:
+        - name: quora-app
+          image: quora-app:latest
+          imagePullPolicy: Always
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:mysql://quora-mysql:3306/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: quora-db-secret
+                  key: SPRING_DATASOURCE_USERNAME
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: quora-db-secret
+                  key: SPRING_DATASOURCE_PASSWORD
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: quora-app-config
+                  key: SPRING_PROFILE
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: quora-app-config
+                  key: LOG_LEVEL
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: quora-app-config
+                  key: TZ
+          ports:
+            - containerPort: 1004
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1.5Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 1004
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 1004
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          volumeMounts:
+            - name: logs
+              mountPath: /app/logs
+      volumes:
+        - name: logs
+          emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quora-app
+  namespace: quora-app
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 1004
+      targetPort: 1004
+      protocol: TCP
+  selector:
+    app: quora-app
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: quora-app-hpa
+  namespace: quora-app
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: quora-app
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

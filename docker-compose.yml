@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: quora_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-quora_db}
+      MYSQL_USER: ${DB_USER:-quora_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-quora_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - quora_network
+    restart: unless-stopped
+
+  # Spring Boot Application Service
+  quora-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: quora_app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME:-quora_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: ${DB_USER:-quora_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-quora_password}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${JPA_DDL_AUTO:-update}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILE:-dev}
+      TZ: UTC
+    ports:
+      - "1004:1004"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - quora_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:1004/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Adminer for database management
+  adminer:
+    image: adminer:latest
+    container_name: quora_adminer
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - quora_network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  quora_network:
+    driver: bridge
