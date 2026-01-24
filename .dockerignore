@@ -1,0 +1,49 @@
+# Build artifacts
+build/
+.gradle/
+out/
+*.jar
+*.jar.original
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# OS
+.DS_Store
+Thumbs.db
+.env.local
+
+# Test
+src/test/
+*.test
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+Jenkinsfile
+
+# Misc
+.mvn/
+mvnw
+mvnw.cmd
+node_modules/
+logs/

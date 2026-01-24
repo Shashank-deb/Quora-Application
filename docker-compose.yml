@@ -11,12 +11,11 @@ services:
       MYSQL_USER: ${DB_USER:-quora_user}
       MYSQL_PASSWORD: ${DB_PASSWORD:-quora_password}
     volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,7 +47,7 @@ services:
       - quora_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1004/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:1004/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
