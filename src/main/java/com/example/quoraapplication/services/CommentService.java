@@ -1,6 +1,8 @@
 package com.example.quoraapplication.services;
 
 import com.example.quoraapplication.dtos.CommentDTO;
+import com.example.quoraapplication.dtos.CommentResponseDTO;
+import com.example.quoraapplication.dtos.UserBasicDTO;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.models.Comment;
 import com.example.quoraapplication.models.User;
@@ -9,10 +11,12 @@ import com.example.quoraapplication.repositories.CommentRepository;
 import com.example.quoraapplication.repositories.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -28,16 +32,28 @@ public class CommentService {
         this.userRepository = userRepository;
     }
 
-    public List<Comment> getCommentsByAnswerId(Long answerId, int page, int size){
-        return commentRepository.findByAnswerId(answerId, PageRequest.of(page, size)).getContent();
+    @Transactional(readOnly = true)
+    public List<CommentResponseDTO> getCommentsByAnswerId(Long answerId, int page, int size){
+        return commentRepository.findByAnswerId(answerId, PageRequest.of(page, size))
+                .getContent()
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public List<Comment> getRepliesByCommentId(Long commentId, int page, int size){
-        return commentRepository.findByParentCommentId(commentId, PageRequest.of(page, size)).getContent();
+    @Transactional(readOnly = true)
+    public List<CommentResponseDTO> getRepliesByCommentId(Long commentId, int page, int size){
+        return commentRepository.findByParentCommentId(commentId, PageRequest.of(page, size))
+                .getContent()
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Comment> getCommentId(Long id){
-        return commentRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<CommentResponseDTO> getCommentId(Long id){
+        return commentRepository.findById(id)
+                .map(this::convertToResponseDTO);
     }
 
     public Comment createComment(CommentDTO commentDTO){
@@ -65,20 +81,13 @@ public class CommentService {
      * @param userId - ID of the user who is liking the comment
      * @throws RuntimeException if comment or user is not found
      */
+    @Transactional
     public void likeComment(Long commentId, Long userId) {
-        Optional<Comment> commentOptional = commentRepository.findById(commentId);
-        Optional<User> userOptional = userRepository.findById(userId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment with ID " + commentId + " not found"));
 
-        if (commentOptional.isEmpty()) {
-            throw new RuntimeException("Comment with ID " + commentId + " not found");
-        }
-
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with ID " + userId + " not found");
-        }
-
-        Comment comment = commentOptional.get();
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
         // Initialize the likedBy set if it's null
         if (comment.getLikedBy() == null) {
@@ -98,25 +107,65 @@ public class CommentService {
      * @param userId - ID of the user who is unliking the comment
      * @throws RuntimeException if comment or user is not found
      */
+    @Transactional
     public void unlikeComment(Long commentId, Long userId) {
-        Optional<Comment> commentOptional = commentRepository.findById(commentId);
-        Optional<User> userOptional = userRepository.findById(userId);
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment with ID " + commentId + " not found"));
 
-        if (commentOptional.isEmpty()) {
-            throw new RuntimeException("Comment with ID " + commentId + " not found");
-        }
-
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with ID " + userId + " not found");
-        }
-
-        Comment comment = commentOptional.get();
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
         // Remove the user from comment's liked by set if present
         if (comment.getLikedBy() != null) {
             comment.getLikedBy().remove(user);
             commentRepository.save(comment);
         }
+    }
+
+    /**
+     * Convert Comment entity to CommentResponseDTO
+     */
+    private CommentResponseDTO convertToResponseDTO(Comment comment) {
+        CommentResponseDTO dto = new CommentResponseDTO();
+        dto.setId(comment.getId());
+        dto.setContent(comment.getContent());
+        
+        // Map user to UserBasicDTO (if you have user in Comment entity)
+        // For now, commenting out as Comment doesn't have user field in your original model
+        // If you add it later, uncomment this:
+        /*
+        if (comment.getUser() != null) {
+            UserBasicDTO userDTO = new UserBasicDTO();
+            userDTO.setId(comment.getUser().getId());
+            userDTO.setUsername(comment.getUser().getUsername());
+            dto.setUser(userDTO);
+        }
+        */
+        
+        // Set answer ID
+        if (comment.getAnswer() != null) {
+            dto.setAnswerId(comment.getAnswer().getId());
+        }
+        
+        // Set parent comment ID
+        if (comment.getParentComment() != null) {
+            dto.setParentCommentId(comment.getParentComment().getId());
+        }
+        
+        // Get like count without loading the entire collection
+        if (comment.getLikedBy() != null) {
+            dto.setLikeCount(comment.getLikedBy().size());
+        } else {
+            dto.setLikeCount(0);
+        }
+        
+        // Get reply count without loading the entire collection
+        if (comment.getReplies() != null) {
+            dto.setReplyCount(comment.getReplies().size());
+        } else {
+            dto.setReplyCount(0);
+        }
+        
+        return dto;
     }
 }

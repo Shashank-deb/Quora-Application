@@ -1,6 +1,7 @@
 package com.example.quoraapplication.controllers;
 
 import com.example.quoraapplication.dtos.CommentDTO;
+import com.example.quoraapplication.dtos.CommentResponseDTO;
 import com.example.quoraapplication.models.Comment;
 import com.example.quoraapplication.services.CommentService;
 import org.springframework.http.ResponseEntity;
@@ -20,26 +21,26 @@ public class CommentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Comment>> getCommentsByAnswerId(
+    public ResponseEntity<List<CommentResponseDTO>> getCommentsByAnswerId(
             @RequestParam Long answerId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<Comment> comments = commentService.getCommentsByAnswerId(answerId, page, size);
+        List<CommentResponseDTO> comments = commentService.getCommentsByAnswerId(answerId, page, size);
         return ResponseEntity.ok(comments);
     }
 
     @GetMapping("/replies")
-    public ResponseEntity<List<Comment>> getRepliesByCommentId(
+    public ResponseEntity<List<CommentResponseDTO>> getRepliesByCommentId(
             @RequestParam Long commentId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<Comment> replies = commentService.getRepliesByCommentId(commentId, page, size);
+        List<CommentResponseDTO> replies = commentService.getRepliesByCommentId(commentId, page, size);
         return ResponseEntity.ok(replies);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Comment> getCommentById(@PathVariable Long id) {
-        Optional<Comment> comment = commentService.getCommentId(id);
+    public ResponseEntity<CommentResponseDTO> getCommentById(@PathVariable Long id) {
+        Optional<CommentResponseDTO> comment = commentService.getCommentId(id);
         return comment.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

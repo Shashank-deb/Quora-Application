@@ -1,7 +1,7 @@
 package com.example.quoraapplication.controllers;
 
-
 import com.example.quoraapplication.dtos.UserDTO;
+import com.example.quoraapplication.dtos.UserResponseDTO;
 import com.example.quoraapplication.models.User;
 import com.example.quoraapplication.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -14,27 +14,29 @@ import java.util.Optional;
 @RequestMapping("/api/v1/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
-
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserResponseDTO>> getAllUsers() {
+        List<UserResponseDTO> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable long id) {
-        Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+        Optional<UserResponseDTO> user = userService.getUserById(id);
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public User createUser(@RequestBody UserDTO userDTO) {
-        return userService.createUser(userDTO);
+    public ResponseEntity<User> createUser(@RequestBody UserDTO userDTO) {
+        User createdUser = userService.createUser(userDTO);
+        return ResponseEntity.ok(createdUser);
     }
 
     @DeleteMapping("/{id}")
@@ -45,8 +47,7 @@ public class UserController {
 
     @PostMapping("/{userId}/followTag/{tagId}")
     public ResponseEntity<Void> followTag(@PathVariable Long userId, @PathVariable Long tagId) {
-        userService.followTag(userId,tagId);
+        userService.followTag(userId, tagId);
         return ResponseEntity.noContent().build();
     }
-
 }

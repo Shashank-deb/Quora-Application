@@ -1,6 +1,7 @@
 package com.example.quoraapplication.controllers;
 
 import com.example.quoraapplication.dtos.AnswerDTO;
+import com.example.quoraapplication.dtos.AnswerResponseDTO;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.services.AnswerService;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +21,17 @@ public class AnswerController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Answer>> getAnswersByQuestionId(
+    public ResponseEntity<List<AnswerResponseDTO>> getAnswersByQuestionId(
             @RequestParam Long questionId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        List<Answer> answers = answerService.getAnswersByQuestionId(questionId, page, size);
+        List<AnswerResponseDTO> answers = answerService.getAnswersByQuestionId(questionId, page, size);
         return ResponseEntity.ok(answers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Answer> getAnswerById(@PathVariable Long id) {
-        Optional<Answer> answer = answerService.getAnswerById(id);
+    public ResponseEntity<AnswerResponseDTO> getAnswerById(@PathVariable Long id) {
+        Optional<AnswerResponseDTO> answer = answerService.getAnswerById(id);
         return answer.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

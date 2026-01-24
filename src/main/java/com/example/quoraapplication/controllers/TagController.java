@@ -1,6 +1,7 @@
 package com.example.quoraapplication.controllers;
 
 import com.example.quoraapplication.dtos.TagDTO;
+import com.example.quoraapplication.dtos.TagResponseDTO;
 import com.example.quoraapplication.models.Tag;
 import com.example.quoraapplication.services.TagService;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +21,14 @@ public class TagController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tag>> getAllTags() {
-        List<Tag> tags = tagService.getAllTags();
+    public ResponseEntity<List<TagResponseDTO>> getAllTags() {
+        List<TagResponseDTO> tags = tagService.getAllTags();
         return ResponseEntity.ok(tags);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Tag> getTagById(@PathVariable Long id) {
-        Optional<Tag> tag = tagService.getTagById(id);
+    public ResponseEntity<TagResponseDTO> getTagById(@PathVariable Long id) {
+        Optional<TagResponseDTO> tag = tagService.getTagById(id);
         return tag.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

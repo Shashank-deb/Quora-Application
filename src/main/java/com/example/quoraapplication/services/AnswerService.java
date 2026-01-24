@@ -1,6 +1,8 @@
 package com.example.quoraapplication.services;
 
 import com.example.quoraapplication.dtos.AnswerDTO;
+import com.example.quoraapplication.dtos.AnswerResponseDTO;
+import com.example.quoraapplication.dtos.UserBasicDTO;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.models.Question;
 import com.example.quoraapplication.models.User;
@@ -9,10 +11,12 @@ import com.example.quoraapplication.repositories.QuestionRepository;
 import com.example.quoraapplication.repositories.UserRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AnswerService {
@@ -29,12 +33,19 @@ public class AnswerService {
         this.userRepository = userRepository;
     }
 
-    public List<Answer> getAnswersByQuestionId(Long questionId, int page, int size) {
-        return answerRepository.findByQuestionId(questionId, PageRequest.of(page, size)).getContent();
+    @Transactional(readOnly = true)
+    public List<AnswerResponseDTO> getAnswersByQuestionId(Long questionId, int page, int size) {
+        return answerRepository.findByQuestionId(questionId, PageRequest.of(page, size))
+                .getContent()
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Answer> getAnswerById(Long id) {
-        return answerRepository.findById(id);
+    @Transactional(readOnly = true)
+    public Optional<AnswerResponseDTO> getAnswerById(Long id) {
+        return answerRepository.findById(id)
+                .map(this::convertToResponseDTO);
     }
 
     public Answer createAnswer(AnswerDTO answerDTO) {
@@ -60,20 +71,13 @@ public class AnswerService {
      * @param userId - ID of the user who is liking the answer
      * @throws RuntimeException if answer or user is not found
      */
+    @Transactional
     public void likeAnswer(Long answerId, Long userId) {
-        Optional<Answer> answerOptional = answerRepository.findById(answerId);
-        Optional<User> userOptional = userRepository.findById(userId);
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new RuntimeException("Answer with ID " + answerId + " not found"));
 
-        if (answerOptional.isEmpty()) {
-            throw new RuntimeException("Answer with ID " + answerId + " not found");
-        }
-
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with ID " + userId + " not found");
-        }
-
-        Answer answer = answerOptional.get();
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
         // Initialize the likedBy set if it's null
         if (answer.getLikedBy() == null) {
@@ -93,25 +97,46 @@ public class AnswerService {
      * @param userId - ID of the user who is unliking the answer
      * @throws RuntimeException if answer or user is not found
      */
+    @Transactional
     public void unlikeAnswer(Long answerId, Long userId) {
-        Optional<Answer> answerOptional = answerRepository.findById(answerId);
-        Optional<User> userOptional = userRepository.findById(userId);
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new RuntimeException("Answer with ID " + answerId + " not found"));
 
-        if (answerOptional.isEmpty()) {
-            throw new RuntimeException("Answer with ID " + answerId + " not found");
-        }
-
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with ID " + userId + " not found");
-        }
-
-        Answer answer = answerOptional.get();
-        User user = userOptional.get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
         // Remove the user from answer's liked by set if present
         if (answer.getLikedBy() != null) {
             answer.getLikedBy().remove(user);
             answerRepository.save(answer);
         }
+    }
+
+    /**
+     * Convert Answer entity to AnswerResponseDTO
+     */
+    private AnswerResponseDTO convertToResponseDTO(Answer answer) {
+        AnswerResponseDTO dto = new AnswerResponseDTO();
+        dto.setId(answer.getId());
+        dto.setContent(answer.getContent());
+        
+        // Map user to UserBasicDTO
+        if (answer.getUser() != null) {
+            UserBasicDTO userDTO = new UserBasicDTO();
+            userDTO.setId(answer.getUser().getId());
+            userDTO.setUsername(answer.getUser().getUsername());
+            dto.setUser(userDTO);
+        }
+        
+        // Map question info - just ID and title
+        if (answer.getQuestion() != null) {
+            dto.setQuestionId(answer.getQuestion().getId());
+            dto.setQuestionTitle(answer.getQuestion().getTitle());
+        }
+        
+        // Get like count without loading the entire collection
+        dto.setLikeCount(answer.getLikedBy() != null ? answer.getLikedBy().size() : 0);
+        
+        return dto;
     }
 }
