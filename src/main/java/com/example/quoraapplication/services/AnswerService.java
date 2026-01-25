@@ -1,8 +1,8 @@
 package com.example.quoraapplication.services;
 
+
 import com.example.quoraapplication.dtos.AnswerDTO;
 import com.example.quoraapplication.dtos.AnswerResponseDTO;
-import com.example.quoraapplication.dtos.UserBasicDTO;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.models.Question;
 import com.example.quoraapplication.models.User;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,51 +24,99 @@ public class AnswerService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
 
-    public AnswerService(AnswerRepository answerRepository, 
-                        QuestionRepository questionRepository,
-                        UserRepository userRepository) {
+    public AnswerService(AnswerRepository answerRepository,
+                         QuestionRepository questionRepository,
+                         UserRepository userRepository) {
         this.answerRepository = answerRepository;
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
     }
 
+    /**
+     * Get all answers for a question with pagination
+     * @param questionId the question ID
+     * @param page page number
+     * @param size page size
+     * @return list of answer response DTOs
+     */
     @Transactional(readOnly = true)
     public List<AnswerResponseDTO> getAnswersByQuestionId(Long questionId, int page, int size) {
-        return answerRepository.findByQuestionId(questionId, PageRequest.of(page, size))
+        return answerRepository.findCommentsByAnswer(questionId, PageRequest.of(page, size))
                 .getContent()
                 .stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get a single answer by ID
+     * @param id the answer ID
+     * @return optional answer response DTO
+     */
     @Transactional(readOnly = true)
     public Optional<AnswerResponseDTO> getAnswerById(Long id) {
-        return answerRepository.findById(id)
+        return answerRepository.findByIdWithAuthor(id)
                 .map(this::convertToResponseDTO);
     }
 
+    /**
+     * Create a new answer
+     * @param answerDTO the answer data transfer object
+     * @return the created answer entity
+     * @throws RuntimeException if question or user not found
+     */
+    @Transactional
     public Answer createAnswer(AnswerDTO answerDTO) {
-        Answer answer = new Answer();
-        answer.setContent(answerDTO.getContent());
+        Answer answer = Answer.builder()
+                .content(answerDTO.getContent())
+                .build();
 
-        Optional<Question> question = questionRepository.findById(answerDTO.getQuestionId());
-        question.ifPresent(answer::setQuestion);
+        // Set the question
+        Question question = questionRepository.findById(answerDTO.getQuestionId())
+                .orElseThrow(() -> new RuntimeException("Question with ID " + answerDTO.getQuestionId() + " not found"));
+        answer.setQuestion(question);
 
-        Optional<User> user = userRepository.findById(answerDTO.getUserId());
-        user.ifPresent(answer::setUser);
+        // Set the author
+        User author = userRepository.findById(answerDTO.getUserId())
+                .orElseThrow(() -> new RuntimeException("User with ID " + answerDTO.getUserId() + " not found"));
+        answer.setAuthor(author);
 
         return answerRepository.save(answer);
     }
 
-    public void deleteAnswer(Long id) {
-        answerRepository.deleteById(id);
+    /**
+     * Update an answer
+     * @param id the answer ID
+     * @param answerDTO the updated answer data
+     * @return the updated answer entity
+     * @throws RuntimeException if answer not found
+     */
+    @Transactional
+    public Answer updateAnswer(Long id, AnswerDTO answerDTO) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Answer with ID " + id + " not found"));
+
+        answer.setContent(answerDTO.getContent());
+        return answerRepository.save(answer);
     }
 
     /**
-     * Allows a user to like an answer
-     * @param answerId - ID of the answer to be liked
-     * @param userId - ID of the user who is liking the answer
-     * @throws RuntimeException if answer or user is not found
+     * Delete an answer
+     * @param id the answer ID
+     * @throws RuntimeException if answer not found
+     */
+    @Transactional
+    public void deleteAnswer(Long id) {
+        Answer answer = answerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Answer with ID " + id + " not found"));
+        answerRepository.delete(answer);
+    }
+
+    /**
+     * Like an answer
+     * @param answerId the answer ID
+     * @param userId the user ID
+     * @throws RuntimeException if answer or user not found
      */
     @Transactional
     public void likeAnswer(Long answerId, Long userId) {
@@ -79,23 +126,18 @@ public class AnswerService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
-        // Initialize the likedBy set if it's null
-        if (answer.getLikedBy() == null) {
-            answer.setLikedBy(new HashSet<>());
-        }
+        // Add user to liked by set and increment like count
+        answer.getLikedByUsers().add(user);
+        answer.incrementLikeCount();
 
-        // Add the user to answer's liked by set (Set will handle duplicates automatically)
-        answer.getLikedBy().add(user);
-
-        // Save the updated answer
         answerRepository.save(answer);
     }
 
     /**
-     * Allows a user to unlike an answer
-     * @param answerId - ID of the answer to be unliked
-     * @param userId - ID of the user who is unliking the answer
-     * @throws RuntimeException if answer or user is not found
+     * Unlike an answer
+     * @param answerId the answer ID
+     * @param userId the user ID
+     * @throws RuntimeException if answer or user not found
      */
     @Transactional
     public void unlikeAnswer(Long answerId, Long userId) {
@@ -105,27 +147,81 @@ public class AnswerService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
-        // Remove the user from answer's liked by set if present
-        if (answer.getLikedBy() != null) {
-            answer.getLikedBy().remove(user);
+        // Remove user from liked by set and decrement like count
+        if (answer.getLikedByUsers().contains(user)) {
+            answer.getLikedByUsers().remove(user);
+            answer.decrementLikeCount();
             answerRepository.save(answer);
         }
     }
 
     /**
+     * Mark an answer as accepted
+     * @param answerId the answer ID
+     * @throws RuntimeException if answer not found
+     */
+    @Transactional
+    public void markAsAccepted(Long answerId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new RuntimeException("Answer with ID " + answerId + " not found"));
+
+        answer.markAsAccepted();
+        answerRepository.save(answer);
+    }
+
+    /**
+     * Unmark an answer as accepted
+     * @param answerId the answer ID
+     * @throws RuntimeException if answer not found
+     */
+    @Transactional
+    public void unmarkAsAccepted(Long answerId) {
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new RuntimeException("Answer with ID " + answerId + " not found"));
+
+        answer.markAsNotAccepted();
+        answerRepository.save(answer);
+    }
+
+    /**
+     * Get number of answers for a question
+     * @param questionId the question ID
+     * @return count of answers
+     */
+    @Transactional(readOnly = true)
+    public long getAnswerCountByQuestion(Long questionId) {
+        return answerRepository.countCommentsByAnswer(questionId);
+    }
+
+    /**
+     * Get all answers by a user
+     * @param userId the user ID
+     * @return list of answers by user
+     */
+    @Transactional(readOnly = true)
+    public List<Answer> getAnswersByUser(Long userId) {
+        return answerRepository.findCommentsByUser(userId);
+    }
+
+    /**
      * Convert Answer entity to AnswerResponseDTO
+     * @param answer the answer entity
+     * @return the response DTO
      */
     private AnswerResponseDTO convertToResponseDTO(Answer answer) {
         AnswerResponseDTO dto = new AnswerResponseDTO();
         dto.setId(answer.getId());
         dto.setContent(answer.getContent());
+        dto.setIsAccepted(answer.getIsAccepted());
+        dto.setCreatedAt(answer.getCreatedAt());
+        dto.setUpdatedAt(answer.getUpdatedAt());
         
-        // Map user to UserBasicDTO
-        if (answer.getUser() != null) {
+        // Map author to UserBasicDTO
+        if (answer.getAuthor() != null) {
             UserBasicDTO userDTO = new UserBasicDTO();
-            userDTO.setId(answer.getUser().getId());
-            userDTO.setUsername(answer.getUser().getUsername());
-            dto.setUser(userDTO);
+            userDTO.setId(answer.getAuthor().getId());
+            userDTO.setUsername(answer.getAuthor().getUsername());
+            dto.setAuthor(userDTO);
         }
         
         // Map question info - just ID and title
@@ -134,8 +230,11 @@ public class AnswerService {
             dto.setQuestionTitle(answer.getQuestion().getTitle());
         }
         
-        // Get like count without loading the entire collection
-        dto.setLikeCount(answer.getLikedBy() != null ? answer.getLikedBy().size() : 0);
+        // Set like count
+        dto.setLikeCount(answer.getLikeCount());
+        
+        // Set comment count
+        dto.setCommentCount(answer.getCommentCount());
         
         return dto;
     }
