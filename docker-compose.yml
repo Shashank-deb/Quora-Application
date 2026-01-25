@@ -12,8 +12,9 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD:-quora_password}
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - mysql_data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "3308:3306"
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
@@ -30,6 +31,7 @@ services:
       dockerfile: Dockerfile
     container_name: quora_app
     environment:
+      # ✅ Connection string correct - uses "mysql" (Docker DNS) and port 3306 (internal)
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME:-quora_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ${DB_USER:-quora_user}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-quora_password}

@@ -868,3 +868,463 @@ List of constraint violations:[
 2026-01-25T13:00:08.925+05:30  INFO 12668 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
 2026-01-25T13:00:08.935+05:30  INFO 12668 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 1.149 seconds (process running for 170.331)
 2026-01-25T13:00:08.937+05:30  INFO 12668 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:01:29.324+05:30  INFO 12668 --- [QuoraApplication] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:01:29.440+05:30  INFO 12668 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:01:29.443+05:30  INFO 12668 --- [QuoraApplication] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:01:29.444+05:30  INFO 12668 --- [QuoraApplication] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-01-25T13:01:29.447+05:30  INFO 12668 --- [QuoraApplication] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+2026-01-25T13:11:48.650+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:11:48.653+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:11:48.654+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:11:48.691+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-25T13:11:48.691+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-25T13:11:49.172+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:11:49.225+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 41 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:11:49.576+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:11:49.584+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:11:49.586+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:11:49.619+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 928 ms
+2026-01-25T13:11:49.726+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:11:49.769+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-01-25T13:11:50.148+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:11:50.173+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-25T13:11:50.290+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1fccb230
+2026-01-25T13:11:50.292+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-25T13:11:50.355+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:11:51.205+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:11:51.270+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:11:51.334+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-25T13:11:52.202+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:11:52.207+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 3.904 seconds (process running for 4.483)
+2026-01-25T13:11:58.316+05:30  INFO 20944 --- [QuoraApplication] [http-nio-1004-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-25T13:11:58.316+05:30  INFO 20944 --- [QuoraApplication] [http-nio-1004-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-25T13:11:58.318+05:30  INFO 20944 --- [QuoraApplication] [http-nio-1004-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-01-25T13:30:48.648+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 3 class path changes (0 additions, 0 deletions, 3 modifications)
+2026-01-25T13:30:48.652+05:30  INFO 20944 --- [QuoraApplication] [Thread-1] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:30:48.705+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:30:48.708+05:30  INFO 20944 --- [QuoraApplication] [Thread-1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:30:48.712+05:30  INFO 20944 --- [QuoraApplication] [Thread-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-25T13:30:48.732+05:30  INFO 20944 --- [QuoraApplication] [Thread-1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-01-25T13:30:48.838+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:30:48.838+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:30:48.838+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:30:49.004+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:30:49.025+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 19 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:30:49.119+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:30:49.121+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:30:49.121+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:30:49.142+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 301 ms
+2026-01-25T13:30:49.177+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:30:49.203+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:30:49.204+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-01-25T13:30:49.209+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection com.mysql.cj.jdbc.ConnectionImpl@7c1cc2ec
+2026-01-25T13:30:49.209+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-01-25T13:30:49.211+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:30:49.341+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:30:49.363+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:30:49.596+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:30:49.599+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.789 seconds (process running for 1141.876)
+2026-01-25T13:30:49.601+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:31:44.590+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 3 class path changes (0 additions, 0 deletions, 3 modifications)
+2026-01-25T13:31:44.591+05:30  INFO 20944 --- [QuoraApplication] [Thread-5] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:31:44.642+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:31:44.643+05:30  INFO 20944 --- [QuoraApplication] [Thread-5] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:31:44.645+05:30  INFO 20944 --- [QuoraApplication] [Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown initiated...
+2026-01-25T13:31:44.646+05:30  INFO 20944 --- [QuoraApplication] [Thread-5] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Shutdown completed.
+2026-01-25T13:31:44.727+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:31:44.727+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:31:44.727+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:31:44.851+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:31:44.866+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:31:44.929+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:31:44.930+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:31:44.930+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:31:44.948+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 220 ms
+2026-01-25T13:31:44.972+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:31:44.993+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:31:44.994+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Starting...
+2026-01-25T13:31:44.997+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-3 - Added connection com.mysql.cj.jdbc.ConnectionImpl@4ae571bc
+2026-01-25T13:31:44.997+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Start completed.
+2026-01-25T13:31:44.998+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:31:45.094+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:31:45.116+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:31:45.278+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:31:45.280+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.572 seconds (process running for 1197.557)
+2026-01-25T13:31:45.281+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:33:24.943+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 2 class path changes (0 additions, 0 deletions, 2 modifications)
+2026-01-25T13:33:24.945+05:30  INFO 20944 --- [QuoraApplication] [Thread-9] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:33:25.000+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:33:25.002+05:30  INFO 20944 --- [QuoraApplication] [Thread-9] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:33:25.002+05:30  INFO 20944 --- [QuoraApplication] [Thread-9] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown initiated...
+2026-01-25T13:33:25.003+05:30  INFO 20944 --- [QuoraApplication] [Thread-9] com.zaxxer.hikari.HikariDataSource       : HikariPool-3 - Shutdown completed.
+2026-01-25T13:33:25.085+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:33:25.085+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:33:25.085+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:33:25.207+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:33:25.221+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:33:25.283+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:33:25.283+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:33:25.283+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:33:25.302+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 215 ms
+2026-01-25T13:33:25.329+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:33:25.353+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:33:25.355+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Starting...
+2026-01-25T13:33:25.359+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-4 - Added connection com.mysql.cj.jdbc.ConnectionImpl@11258977
+2026-01-25T13:33:25.359+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Start completed.
+2026-01-25T13:33:25.360+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:33:25.458+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:33:25.478+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:33:25.656+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:33:25.658+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.594 seconds (process running for 1297.934)
+2026-01-25T13:33:25.659+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:35:44.911+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 2 class path changes (0 additions, 2 deletions, 0 modifications)
+2026-01-25T13:35:44.913+05:30  INFO 20944 --- [QuoraApplication] [Thread-13] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:35:44.965+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:35:44.966+05:30  INFO 20944 --- [QuoraApplication] [Thread-13] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:35:44.966+05:30  INFO 20944 --- [QuoraApplication] [Thread-13] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown initiated...
+2026-01-25T13:35:44.968+05:30  INFO 20944 --- [QuoraApplication] [Thread-13] com.zaxxer.hikari.HikariDataSource       : HikariPool-4 - Shutdown completed.
+2026-01-25T13:35:45.044+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:35:45.044+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:35:45.044+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:35:45.250+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:35:45.264+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 12 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:35:45.317+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:35:45.318+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:35:45.318+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:35:45.335+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 289 ms
+2026-01-25T13:35:45.361+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:35:45.381+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:35:45.382+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Starting...
+2026-01-25T13:35:45.386+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-5 - Added connection com.mysql.cj.jdbc.ConnectionImpl@706a4527
+2026-01-25T13:35:45.387+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Start completed.
+2026-01-25T13:35:45.388+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:35:45.480+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:35:45.501+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:35:45.713+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:35:45.715+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.69 seconds (process running for 1437.991)
+2026-01-25T13:35:45.715+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:35:47.118+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 2 class path changes (2 additions, 0 deletions, 0 modifications)
+2026-01-25T13:35:47.119+05:30  INFO 20944 --- [QuoraApplication] [Thread-17] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:35:47.170+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:35:47.171+05:30  INFO 20944 --- [QuoraApplication] [Thread-17] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:35:47.171+05:30  INFO 20944 --- [QuoraApplication] [Thread-17] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown initiated...
+2026-01-25T13:35:47.173+05:30  INFO 20944 --- [QuoraApplication] [Thread-17] com.zaxxer.hikari.HikariDataSource       : HikariPool-5 - Shutdown completed.
+2026-01-25T13:35:47.241+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:35:47.241+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:35:47.241+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:35:47.347+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:35:47.358+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 10 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:35:47.403+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:35:47.403+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:35:47.403+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:35:47.419+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 177 ms
+2026-01-25T13:35:47.438+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:35:47.458+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:35:47.459+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Starting...
+2026-01-25T13:35:47.463+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-6 - Added connection com.mysql.cj.jdbc.ConnectionImpl@24ed6efa
+2026-01-25T13:35:47.463+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Start completed.
+2026-01-25T13:35:47.463+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:35:47.535+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:35:47.553+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:35:47.699+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:35:47.700+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.477 seconds (process running for 1439.976)
+2026-01-25T13:35:47.700+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:38:07.037+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-01-25T13:38:07.038+05:30  INFO 20944 --- [QuoraApplication] [Thread-21] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:38:07.098+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:38:07.099+05:30  INFO 20944 --- [QuoraApplication] [Thread-21] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:38:07.101+05:30  INFO 20944 --- [QuoraApplication] [Thread-21] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown initiated...
+2026-01-25T13:38:07.103+05:30  INFO 20944 --- [QuoraApplication] [Thread-21] com.zaxxer.hikari.HikariDataSource       : HikariPool-6 - Shutdown completed.
+2026-01-25T13:38:07.208+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:38:07.209+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:38:07.209+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:38:07.323+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:38:07.336+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 11 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:38:07.383+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:38:07.384+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:38:07.384+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:38:07.400+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 190 ms
+2026-01-25T13:38:07.423+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:38:07.443+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:38:07.444+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Starting...
+2026-01-25T13:38:07.447+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-7 - Added connection com.mysql.cj.jdbc.ConnectionImpl@68a040c8
+2026-01-25T13:38:07.448+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Start completed.
+2026-01-25T13:38:07.449+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:38:07.521+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:38:07.541+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:38:07.696+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:38:07.698+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.515 seconds (process running for 1579.974)
+2026-01-25T13:38:07.698+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:39:36.292+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (0 additions, 1 deletion, 0 modifications)
+2026-01-25T13:39:36.292+05:30  INFO 20944 --- [QuoraApplication] [Thread-25] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:39:36.364+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:39:36.366+05:30  INFO 20944 --- [QuoraApplication] [Thread-25] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:39:36.366+05:30  INFO 20944 --- [QuoraApplication] [Thread-25] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown initiated...
+2026-01-25T13:39:36.368+05:30  INFO 20944 --- [QuoraApplication] [Thread-25] com.zaxxer.hikari.HikariDataSource       : HikariPool-7 - Shutdown completed.
+2026-01-25T13:39:36.448+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:39:36.448+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:39:36.448+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:39:36.591+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:39:36.607+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:39:36.660+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:39:36.661+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:39:36.661+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:39:36.677+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 228 ms
+2026-01-25T13:39:36.701+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:39:36.722+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:39:36.723+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Starting...
+2026-01-25T13:39:36.727+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-8 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2a04b700
+2026-01-25T13:39:36.727+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Start completed.
+2026-01-25T13:39:36.728+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:39:36.810+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:39:36.827+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:39:37.007+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:39:37.009+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.581 seconds (process running for 1669.285)
+2026-01-25T13:39:37.010+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:39:38.419+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (1 addition, 0 deletions, 0 modifications)
+2026-01-25T13:39:38.420+05:30  INFO 20944 --- [QuoraApplication] [Thread-29] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:39:38.469+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:39:38.470+05:30  INFO 20944 --- [QuoraApplication] [Thread-29] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:39:38.472+05:30  INFO 20944 --- [QuoraApplication] [Thread-29] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown initiated...
+2026-01-25T13:39:38.473+05:30  INFO 20944 --- [QuoraApplication] [Thread-29] com.zaxxer.hikari.HikariDataSource       : HikariPool-8 - Shutdown completed.
+2026-01-25T13:39:38.542+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:39:38.542+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:39:38.542+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:39:38.645+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:39:38.657+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 11 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:39:38.703+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:39:38.703+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:39:38.703+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:39:38.720+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 177 ms
+2026-01-25T13:39:38.744+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:39:38.765+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:39:38.766+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Starting...
+2026-01-25T13:39:38.769+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-9 - Added connection com.mysql.cj.jdbc.ConnectionImpl@2e02596a
+2026-01-25T13:39:38.769+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Start completed.
+2026-01-25T13:39:38.770+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:39:38.836+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:39:38.859+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:39:39.015+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:39:39.017+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.492 seconds (process running for 1671.294)
+2026-01-25T13:39:39.018+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:41:27.920+05:30  INFO 20944 --- [QuoraApplication] [File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 1 class path change (1 addition, 0 deletions, 0 modifications)
+2026-01-25T13:41:27.922+05:30  INFO 20944 --- [QuoraApplication] [Thread-33] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:41:27.969+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:41:27.971+05:30  INFO 20944 --- [QuoraApplication] [Thread-33] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:41:27.971+05:30  INFO 20944 --- [QuoraApplication] [Thread-33] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown initiated...
+2026-01-25T13:41:27.972+05:30  INFO 20944 --- [QuoraApplication] [Thread-33] com.zaxxer.hikari.HikariDataSource       : HikariPool-9 - Shutdown completed.
+2026-01-25T13:41:28.043+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 20944 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:41:28.043+05:30 DEBUG 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:41:28.043+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:41:28.144+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:41:28.155+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 10 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:41:28.200+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:41:28.202+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:41:28.202+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:41:28.217+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 173 ms
+2026-01-25T13:41:28.240+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:41:28.260+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:41:28.261+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Starting...
+2026-01-25T13:41:28.264+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-10 - Added connection com.mysql.cj.jdbc.ConnectionImpl@56956512
+2026-01-25T13:41:28.264+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Start completed.
+2026-01-25T13:41:28.266+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:41:28.334+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:41:28.352+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:41:28.515+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:41:28.516+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 0.489 seconds (process running for 1780.793)
+2026-01-25T13:41:28.516+05:30  INFO 20944 --- [QuoraApplication] [restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-01-25T13:41:46.607+05:30  INFO 20944 --- [QuoraApplication] [http-nio-1004-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-25T13:41:46.607+05:30  INFO 20944 --- [QuoraApplication] [http-nio-1004-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-25T13:41:46.609+05:30  INFO 20944 --- [QuoraApplication] [http-nio-1004-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-01-25T13:41:51.485+05:30  INFO 20944 --- [QuoraApplication] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:41:51.534+05:30  INFO 20944 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:41:51.536+05:30  INFO 20944 --- [QuoraApplication] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:41:51.536+05:30  INFO 20944 --- [QuoraApplication] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Shutdown initiated...
+2026-01-25T13:41:51.538+05:30  INFO 20944 --- [QuoraApplication] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-10 - Shutdown completed.
+2026-01-25T13:41:53.481+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication using Java 19.0.1 with PID 18504 (E:\UberSpringProject\QuoraApplication\build\classes\java\main started by shashank in E:\UberSpringProject\QuoraApplication)
+2026-01-25T13:41:53.483+05:30 DEBUG 18504 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T13:41:53.483+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-01-25T13:41:53.519+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-25T13:41:53.519+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-25T13:41:53.980+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T13:41:54.030+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 5 JPA repository interfaces.
+2026-01-25T13:41:54.358+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T13:41:54.368+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T13:41:54.368+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T13:41:54.402+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 883 ms
+2026-01-25T13:41:54.508+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T13:41:54.550+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-01-25T13:41:54.933+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T13:41:54.958+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-25T13:41:55.072+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@1de71cf1
+2026-01-25T13:41:55.073+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-25T13:41:55.133+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://localhost:3307/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.44
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T13:41:55.960+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T13:41:56.022+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:41:56.082+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-25T13:41:56.939+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T13:41:56.944+05:30  INFO 18504 --- [QuoraApplication] [restartedMain] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 3.786 seconds (process running for 4.361)
+2026-01-25T13:42:11.109+05:30  INFO 18504 --- [QuoraApplication] [http-nio-1004-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-25T13:42:11.109+05:30  INFO 18504 --- [QuoraApplication] [http-nio-1004-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-25T13:42:11.110+05:30  INFO 18504 --- [QuoraApplication] [http-nio-1004-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-01-25T13:44:00.352+05:30  INFO 18504 --- [QuoraApplication] [SpringApplicationShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-25T13:44:00.402+05:30  INFO 18504 --- [QuoraApplication] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-01-25T13:44:00.405+05:30  INFO 18504 --- [QuoraApplication] [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T13:44:00.408+05:30  INFO 18504 --- [QuoraApplication] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-01-25T13:44:00.412+05:30  INFO 18504 --- [QuoraApplication] [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2026-01-25T08:45:10.640Z  INFO 7 --- [QuoraApplication] [main] c.e.quoraapplication.QuoraApplication    : Starting QuoraApplication v0.0.1-SNAPSHOT using Java 17.0.17 with PID 7 (/app/app.jar started by appuser in /app)
+2026-01-25T08:45:10.645Z DEBUG 7 --- [QuoraApplication] [main] c.e.quoraapplication.QuoraApplication    : Running with Spring Boot v4.0.1, Spring v7.0.2
+2026-01-25T08:45:10.646Z  INFO 7 --- [QuoraApplication] [main] c.e.quoraapplication.QuoraApplication    : The following 1 profile is active: "dev"
+2026-01-25T08:45:11.366Z  INFO 7 --- [QuoraApplication] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-25T08:45:11.443Z  INFO 7 --- [QuoraApplication] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 65 ms. Found 5 JPA repository interfaces.
+2026-01-25T08:45:11.990Z  INFO 7 --- [QuoraApplication] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 1004 (http)
+2026-01-25T08:45:12.006Z  INFO 7 --- [QuoraApplication] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-01-25T08:45:12.009Z  INFO 7 --- [QuoraApplication] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.15]
+2026-01-25T08:45:12.046Z  INFO 7 --- [QuoraApplication] [main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1344 ms
+2026-01-25T08:45:12.217Z  INFO 7 --- [QuoraApplication] [main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-01-25T08:45:12.307Z  INFO 7 --- [QuoraApplication] [main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.0.Final
+2026-01-25T08:45:12.847Z  INFO 7 --- [QuoraApplication] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-25T08:45:12.889Z  INFO 7 --- [QuoraApplication] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-01-25T08:45:13.097Z  INFO 7 --- [QuoraApplication] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@527d48db
+2026-01-25T08:45:13.100Z  INFO 7 --- [QuoraApplication] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-01-25T08:45:13.207Z  INFO 7 --- [QuoraApplication] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:mysql://mysql:3306/quora_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&useUnicode=true&characterEncoding=UTF-8]
+	Database driver: MySQL Connector/J
+	Database dialect: MySQLDialect
+	Database version: 8.0.45
+	Default catalog/schema: quora_db/undefined
+	Autocommit mode: undefined/unknown
+	Isolation level: REPEATABLE_READ [default REPEATABLE_READ]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-25T08:45:14.292Z  INFO 7 --- [QuoraApplication] [main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-25T08:45:14.810Z  INFO 7 --- [QuoraApplication] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-25T08:45:14.899Z  INFO 7 --- [QuoraApplication] [main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-25T08:45:16.024Z  INFO 7 --- [QuoraApplication] [main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 1004 (http) with context path '/'
+2026-01-25T08:45:16.042Z  INFO 7 --- [QuoraApplication] [main] c.e.quoraapplication.QuoraApplication    : Started QuoraApplication in 5.994 seconds (process running for 6.742)
+2026-01-25T08:45:19.500Z  INFO 7 --- [QuoraApplication] [http-nio-1004-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-25T08:45:19.501Z  INFO 7 --- [QuoraApplication] [http-nio-1004-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-01-25T08:45:19.503Z  INFO 7 --- [QuoraApplication] [http-nio-1004-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms

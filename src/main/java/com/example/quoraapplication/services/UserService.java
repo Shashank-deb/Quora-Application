@@ -16,23 +16,29 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+
 @Service
 public class UserService {
 
+
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+
 
     public UserService(UserRepository userRepository, TagRepository tagRepository) {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
     }
 
+
     @Transactional(readOnly = true)
     public List<UserResponseDTO> getAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAll()
+                .stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
+
 
     @Transactional(readOnly = true)
     public Optional<UserResponseDTO> getUserById(Long id) {
@@ -40,55 +46,73 @@ public class UserService {
                 .map(this::convertToResponseDTO);
     }
 
+
     public User createUser(UserDTO userDTO) {
+
+        if (userDTO == null) {
+            throw new IllegalArgumentException("UserDTO cannot be null");
+        }
+
+
         User user = new User();
+
+
         user.setUsername(userDTO.getUsername());
         user.setPassword(userDTO.getPassword());
+        user.setEmail(userDTO.getEmail());
+
+        if (userDTO.getFirstName() != null && !userDTO.getFirstName().isBlank()) {
+            user.setFirstName(userDTO.getFirstName());
+        }
+
+        if (userDTO.getLastName() != null && !userDTO.getLastName().isBlank()) {
+            user.setLastName(userDTO.getLastName());
+        }
+
+        if (userDTO.getBio() != null && !userDTO.getBio().isBlank()) {
+            user.setBio(userDTO.getBio());
+        }
+
+        user.setFollowedTags(new HashSet<>());
+        user.setQuestions(new HashSet<>());
+        user.setAnswers(new HashSet<>());
+        user.setComments(new HashSet<>());
+
         return userRepository.save(user);
     }
+
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
 
-    /**
-     * Allows a user to follow a tag
-     * @param userId - ID of the user who wants to follow the tag
-     * @param tagId - ID of the tag to be followed
-     * @throws RuntimeException if user or tag is not found
-     */
+
     @Transactional
     public void followTag(Long userId, Long tagId) {
-        // Use custom query to eagerly fetch the followedTags collection
         User user = userRepository.findByIdWithTags(userId)
                 .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found"));
 
         Tag tag = tagRepository.findById(tagId)
                 .orElseThrow(() -> new RuntimeException("Tag with ID " + tagId + " not found"));
 
-        // Initialize the followedTags set if it's null
         if (user.getFollowedTags() == null) {
             user.setFollowedTags(new HashSet<>());
         }
 
-        // Add the tag to user's followed tags (Set will handle duplicates automatically)
         user.getFollowedTags().add(tag);
 
-        // Save the updated user
         userRepository.save(user);
     }
 
-    /**
-     * Convert User entity to UserResponseDTO
-     */
+
     private UserResponseDTO convertToResponseDTO(User user) {
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
         dto.setUsername(user.getUsername());
-        
-        // Map followedTags to TagDTOs
+
         if (user.getFollowedTags() != null) {
-            Set<TagDTO> tagDTOs = user.getFollowedTags().stream()
+            Set<TagDTO> tagDTOs = user.getFollowedTags()
+                    .stream()
                     .map(tag -> {
                         TagDTO tagDTO = new TagDTO();
                         tagDTO.setId(tag.getId());
@@ -98,7 +122,8 @@ public class UserService {
                     .collect(Collectors.toSet());
             dto.setFollowedTags(tagDTOs);
         }
-        
+
         return dto;
     }
 }
+
