@@ -9,10 +9,17 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Table(name = "questions", indexes = {
+    @Index(name = "idx_user_id", columnList = "user_id")
+})
 @Getter
 @Setter
 public class Question extends BaseModel {
+    
+    @Column(nullable = false, length = 500)
     private String title;
+    
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
     @ManyToMany
@@ -24,10 +31,20 @@ public class Question extends BaseModel {
     @JsonIgnoreProperties({"followers"})
     private Set<Tag> tags;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnoreProperties({"followedTags", "password"})
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"followedTags", "password", "email", "questions", "answers"})
     private User user;
+    
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"question"})
+    private Set<Answer> answers;
+    
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer viewCount = 0;
+    
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer answerCount = 0;
 
     @Override
     public boolean equals(Object o) {

@@ -1,8 +1,7 @@
 package com.example.quoraapplication.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,13 +9,22 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Table(name = "tags", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 @Getter
 @Setter
 public class Tag extends BaseModel {
+    
+    @Column(nullable = false, unique = true, length = 100)
     private String name;
+    
+    @Column(columnDefinition = "TEXT")
+    private String description;
+    
+    @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
+    private Integer followerCount = 0;
 
     @ManyToMany(mappedBy = "followedTags")
-    @JsonIgnoreProperties({"followedTags", "password"})
+    @JsonIgnoreProperties({"followedTags", "password", "email"})
     private Set<User> followers;
 
     @Override

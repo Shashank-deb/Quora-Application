@@ -9,23 +9,34 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
+@Table(name = "comments", indexes = {
+        @Index(name = "idx_answer_id", columnList = "answer_id"),
+        @Index(name = "idx_parent_comment_id", columnList = "parent_comment_id"),
+        @Index(name = "idx_user_id", columnList = "user_id")
+})
 @Getter
 @Setter
 public class Comment extends BaseModel {
 
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "answer_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "answer_id", nullable = false)
     @JsonIgnoreProperties({"comments", "likedBy", "question", "user"})
     private Answer answer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"followedTags", "password", "email"})
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     @JsonIgnoreProperties({"parentComment", "replies", "answer", "likedBy"})
     private Comment parentComment;
 
-    @OneToMany(mappedBy = "parentComment")
+    @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({"parentComment", "answer"})
     private Set<Comment> replies;
 
@@ -35,7 +46,7 @@ public class Comment extends BaseModel {
             joinColumns = @JoinColumn(name = "comment_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @JsonIgnoreProperties({"followedTags", "password"})
+    @JsonIgnoreProperties({"followedTags", "password", "email"})
     private Set<User> likedBy;
 
     @Override
