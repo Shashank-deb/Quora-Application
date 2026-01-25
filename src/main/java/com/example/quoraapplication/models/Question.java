@@ -1,5 +1,3 @@
-// File: src/main/java/com/example/quoraapplication/model/Question.java
-
 package com.example.quoraapplication.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -63,7 +61,7 @@ public class Question {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
     @JsonIgnoreProperties({"followedTags", "password", "email", "questions", "answers", "comments"})
-    private User author;
+    private User user;
 
     /**
      * Tags associated with this question
@@ -109,10 +107,10 @@ public class Question {
     /**
      * Set the author of this question
      */
-    public void setAuthor(User author) {
-        this.author = author;
-        if (author != null && !author.getQuestions().contains(this)) {
-            author.getQuestions().add(this);
+    public void setUser(User user) {
+        this.user = user;
+        if (user != null && !user.getQuestions().contains(this)) {
+            user.getQuestions().add(this);
         }
     }
 
@@ -190,6 +188,25 @@ public class Question {
      */
     public void incrementViewCount() {
         this.viewCount++;
+    }
+
+    /**
+     * Increment answer count
+     */
+    public void incrementAnswerCount() {
+        if (this.answerCount == null) {
+            this.answerCount = 0;
+        }
+        this.answerCount++;
+    }
+
+    /**
+     * Decrement answer count
+     */
+    public void decrementAnswerCount() {
+        if (this.answerCount != null && this.answerCount > 0) {
+            this.answerCount--;
+        }
     }
 
     /**

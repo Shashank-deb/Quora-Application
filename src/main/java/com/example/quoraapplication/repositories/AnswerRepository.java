@@ -13,132 +13,149 @@ import java.util.Optional;
 
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, Long> {
-    
+
     // ============================================================================
-    // Find Methods
+    // Find Answers by Question
     // ============================================================================
-    
+
     /**
-     * Find answers by question ID with pagination
+     * Find all answers for a specific question, ordered by creation date (descending)
      */
-    Page<Answer> findByQuestionId(Long questionId, Pageable pageable);
-    
+    Page<Answer> findByQuestionIdOrderByCreatedAtDesc(Long questionId, Pageable pageable);
+
     /**
-     * Find all answers by question ID
+     * Find all accepted answers for a specific question with pagination
+     */
+    Page<Answer> findByQuestionIdAndIsAcceptedTrue(Long questionId, Pageable pageable);
+
+    /**
+     * Find all accepted answers for a question
+     */
+    List<Answer> findByQuestionIdAndIsAcceptedTrue(Long questionId);
+
+    /**
+     * Find all answers for a specific question
      */
     List<Answer> findByQuestionId(Long questionId);
-    
-    /**
-     * Find answer by ID with author eagerly loaded
-     */
-    @Query("SELECT DISTINCT a FROM Answer a " +
-           "LEFT JOIN FETCH a.author " +
-           "WHERE a.id = :answerId")
-    Optional<Answer> findByIdWithAuthor(@Param("answerId") Long answerId);
-    
-    /**
-     * Find answer with all associations eagerly loaded
-     */
-    @Query("SELECT DISTINCT a FROM Answer a " +
-           "LEFT JOIN FETCH a.author " +
-           "LEFT JOIN FETCH a.question " +
-           "LEFT JOIN FETCH a.comments " +
-           "WHERE a.id = :answerId")
-    Optional<Answer> findByIdWithAllAssociations(@Param("answerId") Long answerId);
-    
-    // ============================================================================
-    // Author/User Methods
-    // ============================================================================
-    
-    /**
-     * Find all answers by a specific author
-     */
-    List<Answer> findByAuthorId(Long authorId);
-    
-    /**
-     * Find all answers by author with pagination
-     */
-    Page<Answer> findByAuthorId(Long authorId, Pageable pageable);
-    
-    /**
-     * Count answers by author
-     */
-    long countByAuthorId(Long authorId);
-    
-    // ============================================================================
-    // Count Methods
-    // ============================================================================
-    
+
     /**
      * Count answers for a question
      */
     long countByQuestionId(Long questionId);
-    
-    /**
-     * Count accepted answers for a question
-     */
-    @Query("SELECT COUNT(a) FROM Answer a WHERE a.question.id = :questionId AND a.isAccepted = true")
-    long countAcceptedAnswersByQuestion(@Param("questionId") Long questionId);
-    
+
     // ============================================================================
-    // Search Methods
+    // Find Answers by Author
     // ============================================================================
-    
+
     /**
-     * Search answers by content
+     * Find all answers by a specific author, ordered by creation date (descending)
      */
-    @Query("SELECT a FROM Answer a " +
-           "WHERE LOWER(a.content) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-           "ORDER BY a.createdAt DESC")
-    List<Answer> searchByContent(@Param("searchTerm") String searchTerm);
-    
+    Page<Answer> findByAuthorIdOrderByCreatedAtDesc(Long authorId, Pageable pageable);
+
     /**
-     * Search answers by content with pagination
+     * Find all answers by a specific author
      */
-    @Query("SELECT a FROM Answer a " +
-           "WHERE LOWER(a.content) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
-           "ORDER BY a.createdAt DESC")
-    Page<Answer> searchByContent(@Param("searchTerm") String searchTerm, Pageable pageable);
-    
+    List<Answer> findByAuthorId(Long authorId);
+
+    /**
+     * Count answers by author
+     */
+    long countByAuthorId(Long authorId);
+
     // ============================================================================
-    // Statistics Methods
+    // Find Accepted Answers
     // ============================================================================
-    
+
     /**
-     * Get most liked answers for a question
+     * Find all accepted answers across all questions
      */
-    @Query("SELECT a FROM Answer a " +
-           "WHERE a.question.id = :questionId " +
-           "ORDER BY a.likeCount DESC")
-    List<Answer> getMostLikedAnswersForQuestion(@Param("questionId") Long questionId, Pageable pageable);
-    
+    @Query("SELECT a FROM Answer a WHERE a.isAccepted = true ORDER BY a.createdAt DESC")
+    List<Answer> findAllAcceptedAnswers();
+
     /**
-     * Get recently created answers
+     * Find accepted answers with pagination
+     */
+    Page<Answer> findByIsAcceptedTrue(Pageable pageable);
+
+    /**
+     * Check if an answer is accepted
+     */
+    @Query("SELECT a.isAccepted FROM Answer a WHERE a.id = :answerId")
+    Optional<Boolean> isAnswerAccepted(@Param("answerId") Long answerId);
+
+    // ============================================================================
+    // Find by Status
+    // ============================================================================
+
+    /**
+     * Find answers by acceptance status
+     */
+    List<Answer> findByIsAccepted(Boolean isAccepted);
+
+    /**
+     * Find recently created answers
      */
     @Query("SELECT a FROM Answer a ORDER BY a.createdAt DESC")
-    List<Answer> getRecentAnswers(Pageable pageable);
-    
+    Page<Answer> findRecentAnswers(Pageable pageable);
+
     /**
-     * Get accepted answer for a question
+     * Find most liked answers
      */
-    @Query("SELECT a FROM Answer a " +
-           "WHERE a.question.id = :questionId AND a.isAccepted = true")
-    Optional<Answer> getAcceptedAnswerForQuestion(@Param("questionId") Long questionId);
-    
+    @Query("SELECT a FROM Answer a ORDER BY a.likeCount DESC")
+    Page<Answer> findMostLikedAnswers(Pageable pageable);
+
+    // ============================================================================
+    // Find Answers with Likes
+    // ============================================================================
+
     /**
-     * Check if user has liked an answer
+     * Find answers liked by a specific user (using JPA relationship)
      */
-    @Query("SELECT COUNT(u) > 0 FROM Answer a " +
-           "JOIN a.likedByUsers u " +
-           "WHERE a.id = :answerId AND u.id = :userId")
-    boolean userHasLikedAnswer(@Param("answerId") Long answerId, @Param("userId") Long userId);
-    
+    @Query("SELECT DISTINCT a FROM Answer a JOIN a.likedBy u WHERE u.id = :userId ORDER BY a.createdAt DESC")
+    Page<Answer> findAnswersLikedByUser(@Param("userId") Long userId, Pageable pageable);
+
     /**
-     * Get user's liked answers
+     * Count likes for an answer
      */
-    @Query("SELECT a FROM Answer a " +
-           "JOIN a.likedByUsers u " +
-           "WHERE u.id = :userId " +
-           "ORDER BY a.createdAt DESC")
-    Page<Answer> getUserLikedAnswers(@Param("userId") Long userId, Pageable pageable);
+    @Query("SELECT SIZE(a.likedBy) FROM Answer a WHERE a.id = :answerId")
+    int countLikesForAnswer(@Param("answerId") Long answerId);
+
+    // ============================================================================
+    // Find Comments on Answers
+    // ============================================================================
+
+    /**
+     * Find answers that have comments
+     */
+    @Query("SELECT DISTINCT a FROM Answer a WHERE SIZE(a.comments) > 0 ORDER BY a.createdAt DESC")
+    Page<Answer> findAnswersWithComments(Pageable pageable);
+
+    /**
+     * Count comments for an answer
+     */
+    @Query("SELECT SIZE(a.comments) FROM Answer a WHERE a.id = :answerId")
+    int countCommentsForAnswer(@Param("answerId") Long answerId);
+
+    // ============================================================================
+    // Complex Queries
+    // ============================================================================
+
+    /**
+     * Find answers by question with acceptance and like count consideration
+     */
+    @Query("SELECT a FROM Answer a WHERE a.question.id = :questionId " +
+           "ORDER BY a.isAccepted DESC, a.likeCount DESC, a.createdAt DESC")
+    Page<Answer> findByQuestionIdOrderedByRelevance(@Param("questionId") Long questionId, Pageable pageable);
+
+    /**
+     * Find answers created after a specific date
+     */
+    @Query("SELECT a FROM Answer a WHERE a.createdAt > CURRENT_TIMESTAMP - 1 DAY ORDER BY a.createdAt DESC")
+    List<Answer> findRecentAnswersLastDay();
+
+    /**
+     * Check if a user has answered a specific question
+     */
+    @Query("SELECT COUNT(a) > 0 FROM Answer a WHERE a.question.id = :questionId AND a.author.id = :userId")
+    boolean hasUserAnsweredQuestion(@Param("questionId") Long questionId, @Param("userId") Long userId);
 }

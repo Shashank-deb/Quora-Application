@@ -1,4 +1,4 @@
-package com.example.quoraapplication.exception.event;
+package com.example.quoraapplication.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,17 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEvent {
+public class NotificationEvent {
     private String eventType;
     private Long userId;
-    private String username;
-    private String email;
+    private String notificationType;
+    private String message;
     private LocalDateTime timestamp;
 }
-
-
-
-
-
-
-

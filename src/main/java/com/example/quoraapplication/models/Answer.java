@@ -17,6 +17,7 @@ import java.util.Set;
 @Table(name = "answers", indexes = {
         @Index(name = "idx_question_id", columnList = "question_id"),
         @Index(name = "idx_author_id", columnList = "author_id"),
+        @Index(name = "idx_accepted", columnList = "is_accepted"),
         @Index(name = "idx_created_at", columnList = "created_at")
 })
 @Getter
@@ -25,19 +26,19 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Answer {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
+    @Column(name = "is_accepted", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isAccepted = false;
+
     @Column(nullable = false, columnDefinition = "INT DEFAULT 0")
     private Integer likeCount = 0;
-
-    @Column(nullable = false)
-    private Boolean isAccepted = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -49,42 +50,96 @@ public class Answer {
     // Relationships
     // ============================================================================
 
+    /**
+     * The question this answer is for
+     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "question_id", nullable = false)
-    @JsonIgnoreProperties({"answers", "comments", "tags"})
+    @JsonIgnoreProperties({"answers", "comments", "tags", "likedByUsers", "user"})
     private Question question;
 
+    /**
+     * The user who wrote this answer
+     */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
-    @JsonIgnoreProperties({"followedTags", "password", "email", "questions", "answers", "comments"})
+    @JsonIgnoreProperties({"answers", "questions", "comments", "followedTags", "password", "email", "likedAnswers", "likedQuestions"})
     private User author;
 
+    /**
+     * The user who marked this answer as accepted (if any)
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accepted_by_id")
+    @JsonIgnoreProperties({"answers", "questions", "comments", "followedTags", "password", "email", "likedAnswers", "likedQuestions"})
+    private User acceptedBy;
+
+    /**
+     * Comments on this answer
+     */
     @OneToMany(mappedBy = "answer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"answer"})
+    @JsonIgnoreProperties({"answer", "question", "author", "parentComment", "likedBy"})
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "likedAnswers")
-    @JsonIgnoreProperties({"likedQuestions", "likedAnswers"})
-    private Set<User> likedByUsers = new HashSet<>();
+    /**
+     * Users who have liked this answer
+     */
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(
+            name = "answer_likes",
+            joinColumns = @JoinColumn(name = "answer_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @JsonIgnoreProperties({"likedAnswers", "likedQuestions", "answers", "questions", "comments"})
+    private Set<User> likedBy = new HashSet<>();
 
     // ============================================================================
-    // Helper Methods
+    // Setter Methods with Bidirectional Relationship Management
     // ============================================================================
 
+    /**
+     * Set the question for this answer
+     * Manages bidirectional relationship
+     */
     public void setQuestion(Question question) {
+        if (this.question != null && this.question.getAnswers() != null) {
+            this.question.getAnswers().remove(this);
+        }
         this.question = question;
         if (question != null && !question.getAnswers().contains(this)) {
             question.getAnswers().add(this);
         }
     }
 
+    /**
+     * Set the author of this answer
+     * Manages bidirectional relationship
+     */
     public void setAuthor(User author) {
+        if (this.author != null && this.author.getAnswers() != null) {
+            this.author.getAnswers().remove(this);
+        }
         this.author = author;
         if (author != null && !author.getAnswers().contains(this)) {
             author.getAnswers().add(this);
         }
     }
 
+    /**
+     * Set the user who accepted this answer
+     * Manages bidirectional relationship
+     */
+    public void setAcceptedBy(User acceptedBy) {
+        this.acceptedBy = acceptedBy;
+    }
+
+    // ============================================================================
+    // Helper Methods
+    // ============================================================================
+
+    /**
+     * Add a comment to this answer
+     */
     public void addComment(Comment comment) {
         if (this.comments == null) {
             this.comments = new HashSet<>();
@@ -93,6 +148,9 @@ public class Answer {
         comment.setAnswer(this);
     }
 
+    /**
+     * Remove a comment from this answer
+     */
     public void removeComment(Comment comment) {
         if (this.comments != null) {
             this.comments.remove(comment);
@@ -100,6 +158,9 @@ public class Answer {
         }
     }
 
+    /**
+     * Increment like count
+     */
     public void incrementLikeCount() {
         if (this.likeCount == null) {
             this.likeCount = 0;
@@ -107,30 +168,50 @@ public class Answer {
         this.likeCount++;
     }
 
+    /**
+     * Decrement like count
+     */
     public void decrementLikeCount() {
         if (this.likeCount != null && this.likeCount > 0) {
             this.likeCount--;
         }
     }
 
-    public void markAsAccepted() {
+    /**
+     * Mark this answer as accepted
+     */
+    public void markAsAccepted(User acceptedBy) {
         this.isAccepted = true;
+        this.acceptedBy = acceptedBy;
     }
 
-    public void markAsNotAccepted() {
+    /**
+     * Unmark this answer as accepted
+     */
+    public void unmarkAsAccepted() {
         this.isAccepted = false;
+        this.acceptedBy = null;
     }
 
+    /**
+     * Check if a user has liked this answer
+     */
     public boolean isLikedBy(User user) {
-        return this.likedByUsers != null && this.likedByUsers.contains(user);
+        return this.likedBy != null && this.likedBy.contains(user);
     }
 
-    public Integer getCommentCount() {
-        return this.comments != null ? this.comments.size() : 0;
-    }
-
+    /**
+     * Get the like count
+     */
     public Integer getLikeCount() {
         return this.likeCount != null ? this.likeCount : 0;
+    }
+
+    /**
+     * Get number of comments
+     */
+    public Integer getCommentCount() {
+        return this.comments != null ? this.comments.size() : 0;
     }
 
     // ============================================================================
@@ -154,6 +235,10 @@ public class Answer {
         updatedAt = LocalDateTime.now();
     }
 
+    // ============================================================================
+    // equals & hashCode
+    // ============================================================================
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -167,12 +252,17 @@ public class Answer {
         return Objects.hash(getId());
     }
 
+    // ============================================================================
+    // toString
+    // ============================================================================
+
     @Override
     public String toString() {
         return "Answer{" +
                 "id=" + id +
-                ", likeCount=" + likeCount +
+                ", content='" + content + '\'' +
                 ", isAccepted=" + isAccepted +
+                ", likeCount=" + likeCount +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

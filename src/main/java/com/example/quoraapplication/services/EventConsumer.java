@@ -1,7 +1,7 @@
 package com.example.quoraapplication.services;
 
 
-import com.example.quoraapplication.exception.event.*;
+import com.example.quoraapplication.events.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

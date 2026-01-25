@@ -1,4 +1,4 @@
-package com.example.quoraapplication.exception.event;
+package com.example.quoraapplication.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

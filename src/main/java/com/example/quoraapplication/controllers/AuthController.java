@@ -1,8 +1,6 @@
 package com.example.quoraapplication.controllers;
 
-
 import com.example.quoraapplication.dtos.*;
-import com.example.quoraapplication.models.Role;
 import com.example.quoraapplication.models.User;
 import com.example.quoraapplication.repositories.UserRepository;
 import com.example.quoraapplication.security.JwtTokenProvider;
@@ -19,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.HashSet;
 
 @RestController
@@ -34,7 +31,6 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
         log.info("Registering new user: {}", registerRequest.getUsername());
@@ -45,19 +41,17 @@ public class AuthController {
                     .body(new ApiResponse(false, "Username is already taken!", null));
         }
 
-
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
             log.warn("Email already exists: {}", registerRequest.getEmail());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ApiResponse(false, "Email address already in use!", null));
         }
 
-
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setRole(Role.ROLE_USER);
+        user.setRole(User.Role.ROLE_USER);
         user.setFollowedTags(new HashSet<>());
         user.setQuestions(new HashSet<>());
         user.setAnswers(new HashSet<>());
@@ -70,7 +64,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiResponse(true, "User registered successfully", userResponse));
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -114,7 +107,6 @@ public class AuthController {
         }
     }
 
-
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
         log.debug("Refreshing JWT token");
@@ -144,7 +136,6 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -160,7 +151,6 @@ public class AuthController {
         log.info("Current user info retrieved: {}", user.getId());
         return ResponseEntity.ok(UserResponse.fromUser(user));
     }
-
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser() {

@@ -2,16 +2,19 @@ package com.example.quoraapplication.services;
 
 import com.example.quoraapplication.dtos.AnswerDTO;
 import com.example.quoraapplication.dtos.AnswerResponseDTO;
-import com.example.quoraapplication.dtos.UserBasicDTO;
+import com.example.quoraapplication.exception.ResourceNotFoundException;
+import com.example.quoraapplication.events.EventPublisher;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.models.Question;
 import com.example.quoraapplication.models.User;
 import com.example.quoraapplication.repositories.AnswerRepository;
 import com.example.quoraapplication.repositories.QuestionRepository;
 import com.example.quoraapplication.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +23,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
+@Transactional
 public class AnswerService {
 
     private final AnswerRepository answerRepository;
@@ -29,233 +32,312 @@ public class AnswerService {
     private final UserRepository userRepository;
     private final EventPublisher eventPublisher;
 
+    public AnswerService(AnswerRepository answerRepository,
+                        QuestionRepository questionRepository,
+                        UserRepository userRepository,
+                        EventPublisher eventPublisher) {
+        this.answerRepository = answerRepository;
+        this.questionRepository = questionRepository;
+        this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
+    }
+
+    // ============================================================================
+    // Create Answer
+    // ============================================================================
+
+    /**
+     * Create a new answer for a question
+     */
+    public Answer createAnswer(AnswerDTO answerDTO) {
+        log.info("Creating answer for question ID: {}", answerDTO.getQuestionId());
+
+        // Fetch the question
+        Question question = questionRepository.findById(answerDTO.getQuestionId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Question not found with id: " + answerDTO.getQuestionId()));
+
+        // Fetch the user (author)
+        User author = userRepository.findById(answerDTO.getAuthorId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "User not found with id: " + answerDTO.getAuthorId()));
+
+        // Create the answer
+        Answer answer = Answer.builder()
+                .content(answerDTO.getContent())
+                .question(question)
+                .author(author)
+                .isAccepted(false)
+                .likeCount(0)
+                .build();
+
+        // Save the answer
+        Answer savedAnswer = answerRepository.save(answer);
+        
+        // Update question's answer count
+        question.addAnswer(savedAnswer);
+        questionRepository.save(question);
+
+        // Add to user's answers
+        author.addAnswer(savedAnswer);
+        userRepository.save(author);
+
+        // Publish event - CORRECTED SIGNATURE with 3 parameters
+        eventPublisher.publishAnswerCreated(
+                savedAnswer.getId(), 
+                savedAnswer.getQuestion().getId(),
+                savedAnswer.getAuthor().getId());
+
+        log.info("Answer created successfully with ID: {}", savedAnswer.getId());
+        return savedAnswer;
+    }
+
+    // ============================================================================
+    // Retrieve Answers
+    // ============================================================================
+
     /**
      * Get all answers for a question with pagination
      */
-    @Transactional(readOnly = true)
     public List<AnswerResponseDTO> getAnswersByQuestionId(Long questionId, int page, int size) {
-        log.debug("Fetching answers for question: {}", questionId);
-        return answerRepository.findByQuestionId(questionId, PageRequest.of(page, size))
-                .getContent()
-                .stream()
+        log.info("Fetching answers for question ID: {}", questionId);
+
+        // Verify question exists
+        if (!questionRepository.existsById(questionId)) {
+            throw new ResourceNotFoundException("Question not found with id: " + questionId);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Answer> answers = answerRepository.findByQuestionIdOrderByCreatedAtDesc(questionId, pageable);
+
+        return answers.getContent().stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get a single answer by ID
+     * Get accepted answers for a question
      */
-    @Transactional(readOnly = true)
-    public Optional<AnswerResponseDTO> getAnswerById(Long id) {
-        log.debug("Fetching answer: {}", id);
-        return answerRepository.findById(id)
+    public List<AnswerResponseDTO> getAcceptedAnswers(Long questionId, int page, int size) {
+        log.info("Fetching accepted answers for question ID: {}", questionId);
+
+        if (!questionRepository.existsById(questionId)) {
+            throw new ResourceNotFoundException("Question not found with id: " + questionId);
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Answer> answers = answerRepository.findByQuestionIdAndIsAcceptedTrue(questionId, pageable);
+
+        return answers.getContent().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get answer by ID
+     */
+    public Optional<AnswerResponseDTO> getAnswerById(Long answerId) {
+        log.info("Fetching answer with ID: {}", answerId);
+        return answerRepository.findById(answerId)
                 .map(this::convertToResponseDTO);
     }
 
     /**
-     * Create a new answer
+     * Get answers by a specific author with pagination
      */
-    @Transactional
-    public Answer createAnswer(AnswerDTO answerDTO) {
-        log.info("Creating answer for question: {}", answerDTO.getQuestionId());
-        
-        Question question = questionRepository.findById(answerDTO.getQuestionId())
-                .orElseThrow(() -> {
-                    log.error("Question not found: {}", answerDTO.getQuestionId());
-                    return new RuntimeException("Question with ID " + answerDTO.getQuestionId() + " not found");
-                });
+    public List<AnswerResponseDTO> getAnswersByAuthor(Long authorId, int page, int size) {
+        log.info("Fetching answers by author ID: {}", authorId);
 
-        User author = userRepository.findById(answerDTO.getUserId())
-                .orElseThrow(() -> {
-                    log.error("User not found: {}", answerDTO.getUserId());
-                    return new RuntimeException("User with ID " + answerDTO.getUserId() + " not found");
-                });
+        if (!userRepository.existsById(authorId)) {
+            throw new ResourceNotFoundException("User not found with id: " + authorId);
+        }
 
-        Answer answer = Answer.builder()
-                .content(answerDTO.getContent())
-                .question(question)
-                .author(author)
-                .likeCount(0)
-                .isAccepted(false)
-                .build();
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<Answer> answers = answerRepository.findByAuthorIdOrderByCreatedAtDesc(authorId, pageable);
 
-        Answer savedAnswer = answerRepository.save(answer);
-        
-        // Publish event
-        eventPublisher.publishAnswerCreated(savedAnswer.getId(), question.getId(), author.getId());
-        
-        log.info("Answer created successfully: {}", savedAnswer.getId());
-        return savedAnswer;
+        return answers.getContent().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     /**
-     * Update an answer
+     * Get answers by question ID with pagination - sorted by acceptance status
      */
-    @Transactional
-    public Answer updateAnswer(Long id, AnswerDTO answerDTO) {
-        log.info("Updating answer: {}", id);
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Answer not found: {}", id);
-                    return new RuntimeException("Answer with ID " + id + " not found");
-                });
+    public Page<Answer> findByQuestionIdOrderByCreatedAtDesc(Long questionId, Pageable pageable) {
+        log.info("Fetching answers for question ID: {} with pagination", questionId);
+        return answerRepository.findByQuestionIdOrderByCreatedAtDesc(questionId, pageable);
+    }
+
+    /**
+     * Find accepted answers for a question with pagination
+     */
+    public Page<Answer> findByQuestionIdAndIsAcceptedTrue(Long questionId, Pageable pageable) {
+        log.info("Fetching accepted answers for question ID: {}", questionId);
+        return answerRepository.findByQuestionIdAndIsAcceptedTrue(questionId, pageable);
+    }
+
+    /**
+     * Find answers by author ID ordered by creation date (descending)
+     */
+    public Page<Answer> findByAuthorIdOrderByCreatedAtDesc(Long authorId, Pageable pageable) {
+        log.info("Fetching answers by author ID: {}", authorId);
+        return answerRepository.findByAuthorIdOrderByCreatedAtDesc(authorId, pageable);
+    }
+
+    // ============================================================================
+    // Update Answer
+    // ============================================================================
+
+    /**
+     * Update answer content
+     */
+    public Answer updateAnswer(Long answerId, AnswerDTO answerDTO) {
+        log.info("Updating answer with ID: {}", answerId);
+
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + answerId));
 
         answer.setContent(answerDTO.getContent());
         Answer updatedAnswer = answerRepository.save(answer);
-        
-        log.info("Answer updated successfully: {}", id);
+
+        log.info("Answer updated successfully with ID: {}", answerId);
         return updatedAnswer;
     }
 
     /**
-     * Delete an answer
+     * Mark answer as accepted
      */
-    @Transactional
-    public void deleteAnswer(Long id) {
-        log.info("Deleting answer: {}", id);
-        Answer answer = answerRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Answer not found: {}", id);
-                    return new RuntimeException("Answer with ID " + id + " not found");
-                });
+    public Answer markAsAccepted(Long answerId, Long userId) {
+        log.info("Marking answer {} as accepted by user {}", answerId, userId);
 
-        answerRepository.delete(answer);
-        log.info("Answer deleted successfully: {}", id);
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + answerId));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        answer.markAsAccepted(user);
+        Answer updatedAnswer = answerRepository.save(answer);
+
+        // Publish event
+        eventPublisher.publishAnswerMarkedAsAccepted(updatedAnswer.getId(), userId);
+
+        log.info("Answer marked as accepted with ID: {}", answerId);
+        return updatedAnswer;
     }
+
+    /**
+     * Mark answer as not accepted
+     */
+    public Answer markAsNotAccepted(Long answerId) {
+        log.info("Unmarking answer {} as accepted", answerId);
+
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + answerId));
+
+        answer.unmarkAsAccepted();
+        Answer updatedAnswer = answerRepository.save(answer);
+
+        log.info("Answer unmarked as accepted with ID: {}", answerId);
+        return updatedAnswer;
+    }
+
+    // ============================================================================
+    // Like/Unlike Answer
+    // ============================================================================
 
     /**
      * Like an answer
      */
-    @Transactional
     public void likeAnswer(Long answerId, Long userId) {
         log.info("User {} liking answer {}", userId, answerId);
+
         Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> {
-                    log.error("Answer not found: {}", answerId);
-                    return new RuntimeException("Answer with ID " + answerId + " not found");
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + answerId));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("User not found: {}", userId);
-                    return new RuntimeException("User with ID " + userId + " not found");
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         if (!answer.isLikedBy(user)) {
-            answer.getLikedByUsers().add(user);
-            answer.incrementLikeCount();
+            user.likeAnswer(answer);
+            userRepository.save(user);
             answerRepository.save(answer);
-            log.info("Answer liked successfully: {}", answerId);
         }
+
+        log.info("Answer liked successfully");
     }
 
     /**
      * Unlike an answer
      */
-    @Transactional
     public void unlikeAnswer(Long answerId, Long userId) {
         log.info("User {} unliking answer {}", userId, answerId);
+
         Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> {
-                    log.error("Answer not found: {}", answerId);
-                    return new RuntimeException("Answer with ID " + answerId + " not found");
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + answerId));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    log.error("User not found: {}", userId);
-                    return new RuntimeException("User with ID " + userId + " not found");
-                });
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         if (answer.isLikedBy(user)) {
-            answer.getLikedByUsers().remove(user);
-            answer.decrementLikeCount();
+            user.unlikeAnswer(answer);
+            userRepository.save(user);
             answerRepository.save(answer);
-            log.info("Answer unliked successfully: {}", answerId);
         }
+
+        log.info("Answer unliked successfully");
     }
 
-    /**
-     * Mark an answer as accepted
-     */
-    @Transactional
-    public void markAsAccepted(Long answerId) {
-        log.info("Marking answer as accepted: {}", answerId);
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> {
-                    log.error("Answer not found: {}", answerId);
-                    return new RuntimeException("Answer with ID " + answerId + " not found");
-                });
+    // ============================================================================
+    // Delete Answer
+    // ============================================================================
 
-        answer.markAsAccepted();
-        answerRepository.save(answer);
-        
-        // Publish event
-        if (answer.getQuestion() != null) {
-            eventPublisher.publishAnswerMarkedAsAccepted(answerId, answer.getQuestion().getId());
+    /**
+     * Delete an answer
+     */
+    public void deleteAnswer(Long answerId) {
+        log.info("Deleting answer with ID: {}", answerId);
+
+        Answer answer = answerRepository.findById(answerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Answer not found with id: " + answerId));
+
+        // Update question's answer count
+        Question question = answer.getQuestion();
+        if (question != null) {
+            question.removeAnswer(answer);
+            questionRepository.save(question);
         }
-        
-        log.info("Answer marked as accepted: {}", answerId);
+
+        // Remove from user's answers
+        User author = answer.getAuthor();
+        if (author != null) {
+            author.removeAnswer(answer);
+            userRepository.save(author);
+        }
+
+        answerRepository.deleteById(answerId);
+        log.info("Answer deleted successfully with ID: {}", answerId);
     }
 
-    /**
-     * Unmark an answer as accepted
-     */
-    @Transactional
-    public void unmarkAsAccepted(Long answerId) {
-        log.info("Unmarking answer as accepted: {}", answerId);
-        Answer answer = answerRepository.findById(answerId)
-                .orElseThrow(() -> {
-                    log.error("Answer not found: {}", answerId);
-                    return new RuntimeException("Answer with ID " + answerId + " not found");
-                });
-
-        answer.markAsNotAccepted();
-        answerRepository.save(answer);
-        log.info("Answer unmarked as accepted: {}", answerId);
-    }
-
-    /**
-     * Get number of answers for a question
-     */
-    @Transactional(readOnly = true)
-    public long getAnswerCountByQuestion(Long questionId) {
-        return answerRepository.countByQuestionId(questionId);
-    }
-
-    /**
-     * Get all answers by a user
-     */
-    @Transactional(readOnly = true)
-    public List<Answer> getAnswersByUser(Long userId) {
-        return answerRepository.findByAuthorId(userId);
-    }
+    // ============================================================================
+    // Helper Methods
+    // ============================================================================
 
     /**
      * Convert Answer entity to AnswerResponseDTO
      */
     private AnswerResponseDTO convertToResponseDTO(Answer answer) {
-        AnswerResponseDTO dto = new AnswerResponseDTO();
-        dto.setId(answer.getId());
-        dto.setContent(answer.getContent());
-        dto.setIsAccepted(answer.getIsAccepted());
-        dto.setCreatedAt(answer.getCreatedAt());
-        dto.setUpdatedAt(answer.getUpdatedAt());
-        dto.setLikeCount(answer.getLikeCount());
-        dto.setCommentCount(answer.getCommentCount());
-        
-        if (answer.getAuthor() != null) {
-            UserBasicDTO userDTO = new UserBasicDTO();
-            userDTO.setId(answer.getAuthor().getId());
-            userDTO.setUsername(answer.getAuthor().getUsername());
-            dto.setAuthor(userDTO);
-        }
-        
-        if (answer.getQuestion() != null) {
-            dto.setQuestionId(answer.getQuestion().getId());
-            dto.setQuestionTitle(answer.getQuestion().getTitle());
-        }
-        
-        return dto;
+        return AnswerResponseDTO.builder()
+                .id(answer.getId())
+                .content(answer.getContent())
+                .isAccepted(answer.getIsAccepted())
+                .likeCount(answer.getLikeCount())
+                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
+                .authorId(answer.getAuthor() != null ? answer.getAuthor().getId() : null)
+                .authorName(answer.getAuthor() != null ? answer.getAuthor().getUsername() : null)
+                .questionId(answer.getQuestion() != null ? answer.getQuestion().getId() : null)
+                .commentCount(answer.getCommentCount())
+                .build();
     }
 }

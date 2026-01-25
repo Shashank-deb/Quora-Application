@@ -1,4 +1,4 @@
-package com.example.quoraapplication.exception.event;
+package com.example.quoraapplication.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +11,10 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuditLogEvent {
+public class QuestionEvent {
     private String eventType;
+    private Long questionId;
     private Long userId;
-    private String action;
-    private String resourceType;
-    private Long resourceId;
-    private String details;
+    private String title;
     private LocalDateTime timestamp;
 }
