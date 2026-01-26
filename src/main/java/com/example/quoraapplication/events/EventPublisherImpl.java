@@ -10,16 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Implementation of EventPublisher using Kafka for event distribution
- * Publishes domain events to Kafka topics for asynchronous processing
+ * Implementation of EventPublisher using Kafka for event distribution.
+ * Publishes domain events to Kafka topics for asynchronous processing.
  */
 @Component
 @Slf4j
 public class EventPublisherImpl implements EventPublisher {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public EventPublisherImpl(KafkaTemplate<String, String> kafkaTemplate) {
+    public EventPublisherImpl(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
@@ -28,12 +28,12 @@ public class EventPublisherImpl implements EventPublisher {
     // ============================================================================
 
     /**
-     * Publish answer created event - CORRECTED SIGNATURE
-     * Now includes authorId parameter
+     * Publish answer created event.
+     * Now includes authorId parameter.
      */
     @Override
     public void publishAnswerCreated(Long answerId, Long questionId, Long authorId) {
-        log.info("Publishing AnswerCreated event for answer ID: {}, question ID: {}, author ID: {}", 
+        log.info("Publishing AnswerCreated event for answer ID: {}, question ID: {}, author ID: {}",
                 answerId, questionId, authorId);
 
         try {
@@ -44,8 +44,7 @@ public class EventPublisherImpl implements EventPublisher {
             event.put("eventType", "ANSWER_CREATED");
             event.put("timestamp", LocalDateTime.now().toString());
 
-            String eventJson = convertToJson(event);
-            kafkaTemplate.send("answer-events", eventJson);
+            kafkaTemplate.send("answer-events", event);
 
             log.info("AnswerCreated event published successfully");
         } catch (Exception e) {
@@ -54,11 +53,11 @@ public class EventPublisherImpl implements EventPublisher {
     }
 
     /**
-     * Publish answer marked as accepted event
+     * Publish answer marked as accepted event.
      */
     @Override
     public void publishAnswerMarkedAsAccepted(Long answerId, Long acceptedByUserId) {
-        log.info("Publishing AnswerMarkedAsAccepted event for answer ID: {}, accepted by user ID: {}", 
+        log.info("Publishing AnswerMarkedAsAccepted event for answer ID: {}, accepted by user ID: {}",
                 answerId, acceptedByUserId);
 
         try {
@@ -68,8 +67,7 @@ public class EventPublisherImpl implements EventPublisher {
             event.put("eventType", "ANSWER_ACCEPTED");
             event.put("timestamp", LocalDateTime.now().toString());
 
-            String eventJson = convertToJson(event);
-            kafkaTemplate.send("answer-events", eventJson);
+            kafkaTemplate.send("answer-events", event);
 
             log.info("AnswerMarkedAsAccepted event published successfully");
         } catch (Exception e) {
@@ -78,7 +76,7 @@ public class EventPublisherImpl implements EventPublisher {
     }
 
     /**
-     * Publish comment created event
+     * Publish comment created event.
      */
     @Override
     public void publishCommentCreated(Comment comment) {
@@ -93,8 +91,7 @@ public class EventPublisherImpl implements EventPublisher {
             event.put("eventType", "COMMENT_CREATED");
             event.put("timestamp", LocalDateTime.now().toString());
 
-            String eventJson = convertToJson(event);
-            kafkaTemplate.send("engagement-events", eventJson);
+            kafkaTemplate.send("engagement-events", event);
 
             log.info("CommentCreated event published successfully");
         } catch (Exception e) {
@@ -103,7 +100,7 @@ public class EventPublisherImpl implements EventPublisher {
     }
 
     /**
-     * Publish comment deleted event
+     * Publish comment deleted event.
      */
     @Override
     public void publishCommentDeleted(Long commentId) {
@@ -115,36 +112,11 @@ public class EventPublisherImpl implements EventPublisher {
             event.put("eventType", "COMMENT_DELETED");
             event.put("timestamp", LocalDateTime.now().toString());
 
-            String eventJson = convertToJson(event);
-            kafkaTemplate.send("engagement-events", eventJson);
+            kafkaTemplate.send("engagement-events", event);
 
             log.info("CommentDeleted event published successfully");
         } catch (Exception e) {
             log.error("Error publishing CommentDeleted event", e);
         }
-    }
-
-    // ============================================================================
-    // Helper Methods
-    // ============================================================================
-
-    /**
-     * Convert map to JSON string
-     * Simple implementation - use Jackson ObjectMapper in production
-     */
-    private String convertToJson(Map<String, Object> map) {
-        StringBuilder json = new StringBuilder("{");
-        map.forEach((key, value) -> {
-            if (value instanceof String) {
-                json.append("\"").append(key).append("\":\"").append(value).append("\",");
-            } else {
-                json.append("\"").append(key).append("\":").append(value).append(",");
-            }
-        });
-        if (json.length() > 1) {
-            json.deleteCharAt(json.length() - 1); // Remove last comma
-        }
-        json.append("}");
-        return json.toString();
     }
 }
