@@ -15,6 +15,24 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+/**
+ * JWT Token Provider
+ * 
+ * LOCATION: src/main/java/com/example/quoraapplication/security/JwtTokenProvider.java
+ * 
+ * Responsibilities:
+ * ✅ Generate JWT access tokens
+ * ✅ Generate JWT refresh tokens
+ * ✅ Validate JWT tokens
+ * ✅ Extract claims from tokens (userId, username)
+ * ✅ Handle token expiration
+ * 
+ * Token Details:
+ * - Algorithm: HS512 (HMAC SHA-512)
+ * - Access Token Expiration: 24 hours (configurable)
+ * - Refresh Token Expiration: 7 days (configurable)
+ * - Signing Key: Minimum 32 characters (configurable)
+ */
 @Component
 @Slf4j
 public class JwtTokenProvider {
@@ -28,12 +46,31 @@ public class JwtTokenProvider {
     @Value("${app.refreshTokenExpirationInMs:604800000}")
     private int refreshTokenExpirationInMs;
 
-
+    /**
+     * Generate JWT token from Authentication object
+     * 
+     * @param authentication - Spring Security Authentication object
+     * @return JWT access token as String
+     * 
+     * Example:
+     * Authentication auth = authenticationManager.authenticate(
+     *     new UsernamePasswordAuthenticationToken(username, password)
+     * );
+     * String token = tokenProvider.generateToken(auth);
+     */
     public String generateToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         return generateTokenFromUserId(userPrincipal.getId(), userPrincipal.getUsername());
     }
 
+    /**
+     * Generate JWT token from user ID and username
+     * Used when user logs in or token is refreshed
+     * 
+     * @param userId - User ID
+     * @param username - Username
+     * @return JWT access token as String
+     */
     public String generateTokenFromUserId(Long userId, String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
@@ -47,6 +84,13 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Generate refresh token for token renewal
+     * Refresh tokens have longer expiration (7 days)
+     * 
+     * @param userId - User ID
+     * @return JWT refresh token as String
+     */
     public String generateRefreshToken(Long userId) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshTokenExpirationInMs);
@@ -60,7 +104,16 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-
+    /**
+     * Extract user ID from JWT token
+     * 
+     * @param token - JWT token string
+     * @return User ID as Long
+     * @throws Exception if token is invalid or expired
+     * 
+     * Example:
+     * Long userId = tokenProvider.getUserIdFromJWT(token);
+     */
     public Long getUserIdFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -71,6 +124,13 @@ public class JwtTokenProvider {
         return Long.parseLong(claims.getSubject());
     }
 
+    /**
+     * Extract username from JWT token
+     * 
+     * @param token - JWT token string
+     * @return Username as String
+     * @throws Exception if token is invalid or expired
+     */
     public String getUsernameFromJWT(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -81,6 +141,20 @@ public class JwtTokenProvider {
         return (String) claims.get("username");
     }
 
+    /**
+     * Validate JWT token
+     * Checks signature, expiration, and format
+     * 
+     * @param authToken - JWT token to validate
+     * @return true if token is valid, false otherwise
+     * 
+     * Handles:
+     * - Invalid signature
+     * - Malformed token
+     * - Expired token
+     * - Unsupported token format
+     * - Empty token
+     */
     public boolean validateToken(String authToken) {
         try {
             Jwts.parser()
@@ -102,6 +176,12 @@ public class JwtTokenProvider {
         return false;
     }
 
+    /**
+     * Get signing key for token generation and verification
+     * Uses HMAC SHA-512 algorithm
+     * 
+     * @return SecretKey for signing
+     */
     private SecretKey getSigningKey() {
         byte[] keyBytes = jwtSecret.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);

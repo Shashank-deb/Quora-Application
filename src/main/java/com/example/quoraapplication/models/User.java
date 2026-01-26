@@ -58,6 +58,13 @@ public class User {
     @Builder.Default
     private boolean isActive = true;
 
+    // ============================================================================
+    // Optimistic Locking
+    // ============================================================================
+    @Version
+    @Column(name = "version", nullable = false)
+    @Builder.Default
+    private Long version = 0L;
 
     // ============================================================================
     // Enums
@@ -374,6 +381,9 @@ public class User {
         updatedAt = LocalDateTime.now();
         if (role == null) {
             role = Role.ROLE_USER;
+        }
+        if (version == null) {
+            version = 0L;
         }
     }
 
