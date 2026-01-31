@@ -26,7 +26,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 /**
- * Spring Security 6.3.3 Configuration - CORRECTED VERSION
+ * Spring Security 6.3.3 Configuration - FIXED VERSION
+ * ✅ All endpoints properly configured
+ * ✅ No invalid URL patterns (no text after **)
  * ✅ Uses modern requestMatchers() instead of deprecated antMatchers()
  * ✅ Uses authorizeHttpRequests() instead of deprecated authorizeRequests()
  * ✅ Proper constructor injection with @RequiredArgsConstructor
@@ -45,22 +47,35 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     // ========================================================================
-    // API Path Constants
+    // API Path Constants - FIXED: No wildcards in the middle
     // ========================================================================
 
+    // Auth Endpoints
     private static final String AUTH_REGISTER = "/api/v1/auth/register";
     private static final String AUTH_LOGIN = "/api/v1/auth/login";
     private static final String AUTH_REFRESH = "/api/v1/auth/refresh-token";
 
+    // Questions Endpoints
     private static final String QUESTIONS_BASE = "/api/v1/questions";
     private static final String QUESTIONS_WILDCARD = "/api/v1/questions/**";
 
+    // Answers Endpoints
     private static final String ANSWERS_BASE = "/api/v1/answers";
     private static final String ANSWERS_WILDCARD = "/api/v1/answers/**";
 
+    // Comments Endpoints
     private static final String COMMENTS_BASE = "/api/v1/comments";
     private static final String COMMENTS_WILDCARD = "/api/v1/comments/**";
 
+    // Users Endpoints
+    private static final String USERS_BASE = "/api/v1/users";
+    private static final String USERS_WILDCARD = "/api/v1/users/**";
+
+    // Tags Endpoints
+    private static final String TAGS_BASE = "/api/v1/tags";
+    private static final String TAGS_WILDCARD = "/api/v1/tags/**";
+
+    // Swagger/Docs Endpoints
     private static final String SWAGGER_UI = "/swagger-ui.html";
     private static final String SWAGGER_UI_RESOURCES = "/swagger-ui/**";
     private static final String SWAGGER_DOCS = "/v3/api-docs";
@@ -190,6 +205,7 @@ public class SecurityConfig {
      * ✅ authorizeHttpRequests(authz -> authz...)       [Replaces authorizeRequests]
      * ✅ requestMatchers()                               [Replaces antMatchers]
      * ✅ NO .and() chaining - uses lambda scope instead [Cleaner syntax]
+     * ✅ All patterns are VALID - ** at end only
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -288,6 +304,38 @@ public class SecurityConfig {
                         // DELETE - Delete comment
                         .requestMatchers(HttpMethod.DELETE, COMMENTS_BASE).authenticated()
                         .requestMatchers(HttpMethod.DELETE, COMMENTS_WILDCARD).authenticated()
+
+                        // ==================== USERS ENDPOINTS ====================
+                        // GET - Retrieve users
+                        .requestMatchers(HttpMethod.GET, USERS_BASE).authenticated()
+                        .requestMatchers(HttpMethod.GET, USERS_WILDCARD).authenticated()
+
+                        // POST - Create user
+                        .requestMatchers(HttpMethod.POST, USERS_BASE).authenticated()
+
+                        // PUT - Update user
+                        .requestMatchers(HttpMethod.PUT, USERS_BASE).authenticated()
+                        .requestMatchers(HttpMethod.PUT, USERS_WILDCARD).authenticated()
+
+                        // DELETE - Delete user
+                        .requestMatchers(HttpMethod.DELETE, USERS_BASE).authenticated()
+                        .requestMatchers(HttpMethod.DELETE, USERS_WILDCARD).authenticated()
+
+                        // ==================== TAGS ENDPOINTS ====================
+                        // GET - Retrieve tags
+                        .requestMatchers(HttpMethod.GET, TAGS_BASE).permitAll()
+                        .requestMatchers(HttpMethod.GET, TAGS_WILDCARD).permitAll()
+
+                        // POST - Create tag (admin only, but authenticated)
+                        .requestMatchers(HttpMethod.POST, TAGS_BASE).authenticated()
+
+                        // PUT - Update tag
+                        .requestMatchers(HttpMethod.PUT, TAGS_BASE).authenticated()
+                        .requestMatchers(HttpMethod.PUT, TAGS_WILDCARD).authenticated()
+
+                        // DELETE - Delete tag
+                        .requestMatchers(HttpMethod.DELETE, TAGS_BASE).authenticated()
+                        .requestMatchers(HttpMethod.DELETE, TAGS_WILDCARD).authenticated()
 
                         // ==================== DEFAULT RULE ====================
                         // All other endpoints require authentication
