@@ -4,6 +4,7 @@ import com.example.quoraapplication.dtos.AnswerDTO;
 import com.example.quoraapplication.dtos.AnswerResponseDTO;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.services.AnswerService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,7 +38,7 @@ public class AnswerController {
     }
 
     @PostMapping
-    public ResponseEntity<Answer> createAnswer(@RequestBody AnswerDTO answerDTO) {
+    public ResponseEntity<Answer> createAnswer(@Valid @RequestBody AnswerDTO answerDTO) {
         Answer createdAnswer = answerService.createAnswer(answerDTO);
         return ResponseEntity.ok(createdAnswer);
     }

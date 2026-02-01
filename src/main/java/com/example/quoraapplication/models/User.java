@@ -1,6 +1,6 @@
 package com.example.quoraapplication.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -82,32 +82,37 @@ public class User {
     private Role role = Role.ROLE_USER;
 
     // ============================================================================
-    // Relationships
+    // LAZY COLLECTIONS WITH @JsonIgnore
+    // DO NOT SERIALIZE THESE IN JSON RESPONSES
     // ============================================================================
 
     /**
      * Questions created by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"user", "answers", "comments", "tags", "likedByUsers"})
+    @JsonIgnore
     private Set<Question> questions = new HashSet<>();
 
     /**
      * Answers created by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"author", "question", "comments", "likedBy", "acceptedBy"})
+    @JsonIgnore
     private Set<Answer> answers = new HashSet<>();
 
     /**
      * Comments created by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"author", "question", "answer", "parentComment", "replies", "likedBy"})
+    @JsonIgnore
     private Set<Comment> comments = new HashSet<>();
 
     /**
      * Tags followed by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
@@ -115,11 +120,12 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    @JsonIgnoreProperties({"followers", "questions"})
+    @JsonIgnore
     private Set<Tag> followedTags = new HashSet<>();
 
     /**
      * Questions liked by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
@@ -127,11 +133,12 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "question_id")
     )
-    @JsonIgnoreProperties({"likedByUsers", "user", "answers", "comments", "tags"})
+    @JsonIgnore
     private Set<Question> likedQuestions = new HashSet<>();
 
     /**
      * Answers liked by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
@@ -139,18 +146,19 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "answer_id")
     )
-    @JsonIgnoreProperties({"likedBy", "author", "question", "comments"})
+    @JsonIgnore
     private Set<Answer> likedAnswers = new HashSet<>();
 
     /**
      * Comments liked by this user
+     * ✅ @JsonIgnore prevents serialization (no lazy loading errors)
      */
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE, mappedBy = "likedBy")
-    @JsonIgnoreProperties({"likedBy", "author", "question", "answer", "parentComment", "replies"})
+    @JsonIgnore
     private Set<Comment> likedComments = new HashSet<>();
 
     // ============================================================================
-    // Setter Methods with Bidirectional Relationship Management
+    // SETTER METHODS
     // ============================================================================
 
     /**
@@ -173,6 +181,10 @@ public class User {
     public void setBio(String bio) {
         this.bio = bio;
     }
+
+    // ============================================================================
+    // BIDIRECTIONAL RELATIONSHIP MANAGEMENT METHODS
+    // ============================================================================
 
     /**
      * Add a question created by this user
@@ -372,7 +384,7 @@ public class User {
     }
 
     // ============================================================================
-    // JPA Lifecycle Callbacks
+    // JPA LIFECYCLE CALLBACKS
     // ============================================================================
 
     @PrePersist
@@ -393,7 +405,7 @@ public class User {
     }
 
     // ============================================================================
-    // equals & hashCode
+    // EQUALS & HASHCODE
     // ============================================================================
 
     @Override
@@ -410,7 +422,7 @@ public class User {
     }
 
     // ============================================================================
-    // toString
+    // TOSTRING
     // ============================================================================
 
     @Override

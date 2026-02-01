@@ -73,7 +73,7 @@ public class AnswerService {
 
         // Save the answer
         Answer savedAnswer = answerRepository.save(answer);
-        
+
         // Update question's answer count
         question.addAnswer(savedAnswer);
         questionRepository.save(question);
@@ -84,7 +84,7 @@ public class AnswerService {
 
         // Publish event - CORRECTED SIGNATURE with 3 parameters
         eventPublisher.publishAnswerCreated(
-                savedAnswer.getId(), 
+                savedAnswer.getId(),
                 savedAnswer.getQuestion().getId(),
                 savedAnswer.getAuthor().getId());
 
@@ -102,13 +102,15 @@ public class AnswerService {
     public List<AnswerResponseDTO> getAnswersByQuestionId(Long questionId, int page, int size) {
         log.info("Fetching answers for question ID: {}", questionId);
 
-        // Verify question exists
         if (!questionRepository.existsById(questionId)) {
             throw new ResourceNotFoundException("Question not found with id: " + questionId);
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Answer> answers = answerRepository.findByQuestionIdOrderByCreatedAtDesc(questionId, pageable);
+
+        // ✅ Uses new method that loads author and question with JOIN FETCH
+        Page<Answer> answers = answerRepository.findByQuestionIdWithAssociations(
+                questionId, pageable);
 
         return answers.getContent().stream()
                 .map(this::convertToResponseDTO)
@@ -126,7 +128,8 @@ public class AnswerService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Answer> answers = answerRepository.findByQuestionIdAndIsAcceptedTrue(questionId, pageable);
+        Page<Answer> answers = answerRepository.findByQuestionIdAndIsAcceptedTrue(
+                questionId, pageable);
 
         return answers.getContent().stream()
                 .map(this::convertToResponseDTO)
@@ -153,7 +156,8 @@ public class AnswerService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Answer> answers = answerRepository.findByAuthorIdOrderByCreatedAtDesc(authorId, pageable);
+        Page<Answer> answers = answerRepository.findByAuthorIdOrderByCreatedAtDesc(
+                authorId, pageable);
 
         return answers.getContent().stream()
                 .map(this::convertToResponseDTO)
