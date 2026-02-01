@@ -19,6 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -26,15 +27,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 /**
- * Spring Security 6.3.3 Configuration - FIXED VERSION
- * ✅ All endpoints properly configured
- * ✅ No invalid URL patterns (no text after **)
- * ✅ Uses modern requestMatchers() instead of deprecated antMatchers()
- * ✅ Uses authorizeHttpRequests() instead of deprecated authorizeRequests()
- * ✅ Proper constructor injection with @RequiredArgsConstructor
- * ✅ No field injection warnings
+ * Spring Security 6.3.3 Configuration - FINAL CORRECTED VERSION
+ * ✅ Uses requestMatchers() with AntPathRequestMatcher (stable for Spring 6.3.3)
+ * ✅ Avoids strict MvcRequestMatcher pattern validation
+ * ✅ All endpoint patterns properly configured
+ * ✅ No pattern parsing errors
  * ✅ Production-ready JWT authentication
- * ✅ Zero Lombok warnings
+ * ✅ Proper constructor injection with @RequiredArgsConstructor
  */
 @Slf4j
 @Configuration
@@ -45,41 +44,6 @@ public class SecurityConfig {
     private final CustomUserDetailsService customUserDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-
-    // ========================================================================
-    // API Path Constants - FIXED: No wildcards in the middle
-    // ========================================================================
-
-    // Auth Endpoints
-    private static final String AUTH_REGISTER = "/api/v1/auth/register";
-    private static final String AUTH_LOGIN = "/api/v1/auth/login";
-    private static final String AUTH_REFRESH = "/api/v1/auth/refresh-token";
-
-    // Questions Endpoints
-    private static final String QUESTIONS_BASE = "/api/v1/questions";
-    private static final String QUESTIONS_WILDCARD = "/api/v1/questions/**";
-
-    // Answers Endpoints
-    private static final String ANSWERS_BASE = "/api/v1/answers";
-    private static final String ANSWERS_WILDCARD = "/api/v1/answers/**";
-
-    // Comments Endpoints
-    private static final String COMMENTS_BASE = "/api/v1/comments";
-    private static final String COMMENTS_WILDCARD = "/api/v1/comments/**";
-
-    // Users Endpoints
-    private static final String USERS_BASE = "/api/v1/users";
-    private static final String USERS_WILDCARD = "/api/v1/users/**";
-
-    // Tags Endpoints
-    private static final String TAGS_BASE = "/api/v1/tags";
-    private static final String TAGS_WILDCARD = "/api/v1/tags/**";
-
-    // Swagger/Docs Endpoints
-    private static final String SWAGGER_UI = "/swagger-ui.html";
-    private static final String SWAGGER_UI_RESOURCES = "/swagger-ui/**";
-    private static final String SWAGGER_DOCS = "/v3/api-docs";
-    private static final String SWAGGER_DOCS_RESOURCES = "/v3/api-docs/**";
 
     // ========================================================================
     // Bean 1: Password Encoder
@@ -199,13 +163,9 @@ public class SecurityConfig {
     /**
      * Main Security Configuration for Spring Security 6.3.3
      *
-     * API Design:
-     * ✅ csrf(csrf -> csrf.disable())                   [Lambda-based, modern]
-     * ✅ cors(cors -> cors.configurationSource(...))    [Lambda-based, modern]
-     * ✅ authorizeHttpRequests(authz -> authz...)       [Replaces authorizeRequests]
-     * ✅ requestMatchers()                               [Replaces antMatchers]
-     * ✅ NO .and() chaining - uses lambda scope instead [Cleaner syntax]
-     * ✅ All patterns are VALID - ** at end only
+     * ✅ Uses requestMatchers(AntPathRequestMatcher) for pattern matching
+     * ✅ Explicitly specifies AntPathRequestMatcher to avoid MvcRequestMatcher
+     * ✅ This is the recommended approach for Spring Security 6.1+
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -235,107 +195,107 @@ public class SecurityConfig {
                 )
 
                 // ================================================================
-                // 5. Authorization Rules (Spring Security 6.3.3 API)
+                // 5. Authorization Rules (Using requestMatchers with AntPathRequestMatcher)
                 // ================================================================
                 .authorizeHttpRequests(authz -> authz
 
                         // ==================== PUBLIC AUTH ENDPOINTS ====================
                         // No authentication required
-                        .requestMatchers(AUTH_REGISTER).permitAll()
-                        .requestMatchers(AUTH_LOGIN).permitAll()
-                        .requestMatchers(AUTH_REFRESH).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/register")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/login")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/auth/refresh-token")).permitAll()
 
                         // ==================== SWAGGER/DOCS ENDPOINTS ====================
                         // Public API documentation
-                        .requestMatchers(SWAGGER_UI).permitAll()
-                        .requestMatchers(SWAGGER_UI_RESOURCES).permitAll()
-                        .requestMatchers(SWAGGER_DOCS).permitAll()
-                        .requestMatchers(SWAGGER_DOCS_RESOURCES).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui.html")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/v3/api-docs/**")).permitAll()
 
                         // ==================== HEALTH ENDPOINTS ====================
                         // Health checks without authentication
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/h2-console/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/actuator/health")).permitAll()
 
                         // ==================== QUESTIONS ENDPOINTS ====================
                         // GET - Retrieve questions
-                        .requestMatchers(HttpMethod.GET, QUESTIONS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.GET, QUESTIONS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions", "GET")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions/**", "GET")).authenticated()
 
                         // POST - Create question
-                        .requestMatchers(HttpMethod.POST, QUESTIONS_BASE).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions", "POST")).authenticated()
 
                         // PUT - Update question
-                        .requestMatchers(HttpMethod.PUT, QUESTIONS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.PUT, QUESTIONS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions", "PUT")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions/**", "PUT")).authenticated()
 
                         // DELETE - Delete question
-                        .requestMatchers(HttpMethod.DELETE, QUESTIONS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.DELETE, QUESTIONS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions", "DELETE")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/questions/**", "DELETE")).authenticated()
 
                         // ==================== ANSWERS ENDPOINTS ====================
                         // GET - Retrieve answers
-                        .requestMatchers(HttpMethod.GET, ANSWERS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.GET, ANSWERS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers", "GET")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers/**", "GET")).authenticated()
 
                         // POST - Create answer
-                        .requestMatchers(HttpMethod.POST, ANSWERS_BASE).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers", "POST")).authenticated()
 
                         // PUT - Update answer
-                        .requestMatchers(HttpMethod.PUT, ANSWERS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.PUT, ANSWERS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers", "PUT")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers/**", "PUT")).authenticated()
 
                         // DELETE - Delete answer
-                        .requestMatchers(HttpMethod.DELETE, ANSWERS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.DELETE, ANSWERS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers", "DELETE")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/answers/**", "DELETE")).authenticated()
 
                         // ==================== COMMENTS ENDPOINTS ====================
                         // GET - Retrieve comments
-                        .requestMatchers(HttpMethod.GET, COMMENTS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.GET, COMMENTS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments", "GET")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments/**", "GET")).authenticated()
 
                         // POST - Create comment
-                        .requestMatchers(HttpMethod.POST, COMMENTS_BASE).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments", "POST")).authenticated()
 
                         // PUT - Update comment
-                        .requestMatchers(HttpMethod.PUT, COMMENTS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.PUT, COMMENTS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments", "PUT")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments/**", "PUT")).authenticated()
 
                         // DELETE - Delete comment
-                        .requestMatchers(HttpMethod.DELETE, COMMENTS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.DELETE, COMMENTS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments", "DELETE")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/comments/**", "DELETE")).authenticated()
 
                         // ==================== USERS ENDPOINTS ====================
                         // GET - Retrieve users
-                        .requestMatchers(HttpMethod.GET, USERS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.GET, USERS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users", "GET")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users/**", "GET")).authenticated()
 
                         // POST - Create user
-                        .requestMatchers(HttpMethod.POST, USERS_BASE).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users", "POST")).authenticated()
 
                         // PUT - Update user
-                        .requestMatchers(HttpMethod.PUT, USERS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.PUT, USERS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users", "PUT")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users/**", "PUT")).authenticated()
 
                         // DELETE - Delete user
-                        .requestMatchers(HttpMethod.DELETE, USERS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.DELETE, USERS_WILDCARD).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users", "DELETE")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/users/**", "DELETE")).authenticated()
 
                         // ==================== TAGS ENDPOINTS ====================
-                        // GET - Retrieve tags
-                        .requestMatchers(HttpMethod.GET, TAGS_BASE).permitAll()
-                        .requestMatchers(HttpMethod.GET, TAGS_WILDCARD).permitAll()
+                        // GET - Retrieve tags (public for discovery)
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags", "GET")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags/**", "GET")).permitAll()
 
-                        // POST - Create tag (admin only, but authenticated)
-                        .requestMatchers(HttpMethod.POST, TAGS_BASE).authenticated()
+                        // POST - Create tag (authenticated)
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags", "POST")).authenticated()
 
-                        // PUT - Update tag
-                        .requestMatchers(HttpMethod.PUT, TAGS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.PUT, TAGS_WILDCARD).authenticated()
+                        // PUT - Update tag (authenticated)
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags", "PUT")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags/**", "PUT")).authenticated()
 
-                        // DELETE - Delete tag
-                        .requestMatchers(HttpMethod.DELETE, TAGS_BASE).authenticated()
-                        .requestMatchers(HttpMethod.DELETE, TAGS_WILDCARD).authenticated()
+                        // DELETE - Delete tag (authenticated)
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags", "DELETE")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/v1/tags/**", "DELETE")).authenticated()
 
                         // ==================== DEFAULT RULE ====================
                         // All other endpoints require authentication
