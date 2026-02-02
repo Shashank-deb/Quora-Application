@@ -3,35 +3,35 @@ package com.example.quoraapplication.events;
 import com.example.quoraapplication.models.Comment;
 
 /**
- * Event Publisher Interface for publishing domain events
- * Defines contract for publishing various application events
+ * Event publisher for publishing domain events
+ * This interface defines events that should be published when important actions occur
  */
 public interface EventPublisher {
-
+    
     /**
-     * Publish event when an answer is created
-     * @param answerId - the ID of the created answer
-     * @param questionId - the ID of the question
-     * @param authorId - the ID of the user who created the answer
+     * Publish when an answer is created
+     * @param answerId - the created answer ID
+     * @param questionId - the question being answered
+     * @param authorId - the user who created the answer
      */
     void publishAnswerCreated(Long answerId, Long questionId, Long authorId);
-
+    
     /**
-     * Publish event when an answer is marked as accepted
-     * @param answerId - the ID of the answer
-     * @param acceptedByUserId - the ID of the user who accepted it
+     * Publish when an answer is marked as accepted
+     * @param answerId - the accepted answer ID
+     * @param acceptedByUserId - the user who accepted it
      */
     void publishAnswerMarkedAsAccepted(Long answerId, Long acceptedByUserId);
-
+    
     /**
-     * Publish event when a comment is created
-     * @param comment - the created comment object
+     * Publish when a comment is created
+     * @param comment - the created comment
      */
     void publishCommentCreated(Comment comment);
-
+    
     /**
-     * Publish event when a comment is deleted
-     * @param commentId - the ID of the deleted comment
+     * Publish when a comment is deleted
+     * @param commentId - the deleted comment ID
      */
     void publishCommentDeleted(Long commentId);
 }

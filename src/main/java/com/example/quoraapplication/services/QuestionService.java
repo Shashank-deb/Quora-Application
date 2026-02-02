@@ -1,6 +1,9 @@
 package com.example.quoraapplication.services;
 
 import com.example.quoraapplication.dtos.*;
+import com.example.quoraapplication.exception.InvalidOperationException;
+import com.example.quoraapplication.exception.ResourceNotFoundException;
+import com.example.quoraapplication.exception.ValidationException;
 import com.example.quoraapplication.models.Question;
 import com.example.quoraapplication.models.Tag;
 import com.example.quoraapplication.models.User;
@@ -8,10 +11,13 @@ import com.example.quoraapplication.repositories.QuestionRepository;
 import com.example.quoraapplication.repositories.TagRepository;
 import com.example.quoraapplication.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +30,7 @@ public class QuestionService {
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    public EventPublisher eventPublisher;
 
     public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, TagRepository tagRepository) {
         this.questionRepository = questionRepository;
@@ -36,30 +43,71 @@ public class QuestionService {
     // ============================================================================
 
     /**
-     * Create a new question
-     * ✅ Uses class-level @Transactional (allows writes)
+     * Create a new question with proper error handling
      */
+    @Transactional(rollbackFor = Exception.class)
     public Question createQuestion(QuestionDTO questionDTO) {
         log.info("Creating new question: {}", questionDTO.getTitle());
 
-        Question question = new Question();
-        question.setTitle(questionDTO.getTitle());
-        question.setContent(questionDTO.getContent());
+        try {
+            // Fetch user
+            User user = userRepository.findById(questionDTO.getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "User not found with id: " + questionDTO.getUserId()));
 
-        Optional<User> user = userRepository.findById(questionDTO.getUserId());
-        user.ifPresent(question::setUser);
+            // Check user hasn't asked too many questions today
+            long questionsToday = questionRepository.findAll()
+                    .stream()
+                    .filter(q -> q.getUser().getId().equals(user.getId()))
+                    .filter(q -> q.getCreatedAt().isAfter(LocalDateTime.now().minusDays(1)))
+                    .count();
 
-        Set<Tag> tags = questionDTO.getTagIds().stream()
-                .map(tagRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
+            if (questionsToday >= 10) {
+                throw new InvalidOperationException(
+                        "You can ask maximum 10 questions per day");
+            }
 
-        question.setTags(tags);
-        Question savedQuestion = questionRepository.save(question);
+            // Create question
+            Question question = new Question();
+            question.setTitle(questionDTO.getTitle());
+            question.setContent(questionDTO.getContent());
+            question.setUser(user);
 
-        log.info("Question created successfully with ID: {}", savedQuestion.getId());
-        return savedQuestion;
+            // Fetch and associate tags
+            Set<Tag> tags = questionDTO.getTagIds().stream()
+                    .map(tagId -> tagRepository.findById(tagId)
+                            .orElseThrow(() -> new ResourceNotFoundException(
+                                    "Tag not found with id: " + tagId)))
+                    .collect(Collectors.toSet());
+            question.setTags(tags);
+
+            // Save with error handling
+            Question savedQuestion = questionRepository.save(question);
+            log.info("Question created successfully with ID: {}", savedQuestion.getId());
+
+            // Publish event
+            try {
+                eventPublisher.publishAnswerCreated(
+                        savedQuestion.getId(),
+                        0L,
+                        user.getId());
+            } catch (Exception e) {
+                log.warn("Failed to publish question event, continuing anyway", e);
+                // Don't fail the operation if Kafka is down
+            }
+
+            return savedQuestion;
+
+        } catch (DataIntegrityViolationException e) {
+            log.error("Data integrity violation while creating question: {}", e.getMessage());
+            throw new ValidationException("Invalid data provided: duplicate or constraint violation");
+        } catch (InvalidDataAccessApiUsageException e) {
+            log.error("Invalid data access while creating question: {}", e.getMessage());
+            throw new ValidationException("Invalid data provided");
+        } catch (Exception e) {
+            log.error("Unexpected error while creating question: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to create question: " + e.getMessage());
+        }
     }
 
     // ============================================================================

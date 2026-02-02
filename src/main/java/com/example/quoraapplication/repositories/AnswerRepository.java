@@ -109,4 +109,32 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
      * Count answers by author
      */
     long countByAuthorId(Long authorId);
+
+    /**
+     * Count answers by question and author
+     * Used to check if user already answered this question
+     */
+    @Query("SELECT COUNT(a) FROM Answer a " +
+            "WHERE a.question.id = :questionId AND a.author.id = :authorId")
+    long countByQuestionIdAndAuthorId(
+            @Param("questionId") Long questionId,
+            @Param("authorId") Long authorId);
+
+    /**
+     * Find most recent answers with pagination
+     */
+    @Query("SELECT DISTINCT a FROM Answer a " +
+            "LEFT JOIN FETCH a.author " +
+            "ORDER BY a.createdAt DESC")
+    Page<Answer> findRecentAnswers(Pageable pageable);
+
+    /**
+     * Find answers by question with like count ordering
+     */
+    @Query("SELECT DISTINCT a FROM Answer a " +
+            "LEFT JOIN FETCH a.author " +
+            "WHERE a.question.id = :questionId " +
+            "ORDER BY a.likeCount DESC, a.createdAt DESC")
+    Page<Answer> findByQuestionIdOrderByLikes(
+            @Param("questionId") Long questionId, Pageable pageable);
 }

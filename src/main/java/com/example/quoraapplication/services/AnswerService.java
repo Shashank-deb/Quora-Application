@@ -2,8 +2,11 @@ package com.example.quoraapplication.services;
 
 import com.example.quoraapplication.dtos.AnswerDTO;
 import com.example.quoraapplication.dtos.AnswerResponseDTO;
+import com.example.quoraapplication.exception.DuplicateResourceException;
+import com.example.quoraapplication.exception.InvalidOperationException;
 import com.example.quoraapplication.exception.ResourceNotFoundException;
 import com.example.quoraapplication.events.EventPublisher;
+import com.example.quoraapplication.exception.ValidationException;
 import com.example.quoraapplication.models.Answer;
 import com.example.quoraapplication.models.Question;
 import com.example.quoraapplication.models.User;
@@ -47,22 +50,58 @@ public class AnswerService {
     // ============================================================================
 
     /**
-     * Create a new answer for a question
+     * Create a new answer for a question with comprehensive validations
      */
     public Answer createAnswer(AnswerDTO answerDTO) {
         log.info("Creating answer for question ID: {}", answerDTO.getQuestionId());
 
-        // Fetch the question
+        // Validation 1: Check question exists
         Question question = questionRepository.findById(answerDTO.getQuestionId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Question not found with id: " + answerDTO.getQuestionId()));
 
-        // Fetch the user (author)
+        // Validation 2: Check user exists
         User author = userRepository.findById(answerDTO.getAuthorId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "User not found with id: " + answerDTO.getAuthorId()));
 
-        // Create the answer
+        // Validation 3: Check user is not answering their own question
+        if (question.getUser().getId().equals(author.getId())) {
+            throw new InvalidOperationException(
+                    "You cannot answer your own question");
+        }
+
+        // Validation 4: Check user hasn't already answered this question
+        long existingAnswers = answerRepository
+                .countByQuestionIdAndAuthorId(
+                        answerDTO.getQuestionId(),
+                        answerDTO.getAuthorId());
+
+        if (existingAnswers > 0) {
+            throw new DuplicateResourceException(
+                    "User has already answered this question");
+        }
+
+        // Validation 5: Check answer content length
+        if (answerDTO.getContent().length() < 20) {
+            throw new ValidationException("content",
+                    answerDTO.getContent(),
+                    "Answer must be at least 20 characters long");
+        }
+
+        // Validation 6: Check for spam/duplicate content (simple check)
+        String normalizedContent = answerDTO.getContent().toLowerCase().trim();
+        boolean isDuplicate = answerRepository.findByQuestionId(question.getId())
+                .stream()
+                .anyMatch(a -> a.getContent().toLowerCase().trim()
+                        .equals(normalizedContent));
+
+        if (isDuplicate) {
+            throw new DuplicateResourceException(
+                    "This answer content already exists for this question");
+        }
+
+        // All validations passed - create answer
         Answer answer = Answer.builder()
                 .content(answerDTO.getContent())
                 .question(question)
@@ -71,18 +110,13 @@ public class AnswerService {
                 .likeCount(0)
                 .build();
 
-        // Save the answer
         Answer savedAnswer = answerRepository.save(answer);
-
-        // Update question's answer count
         question.addAnswer(savedAnswer);
-        questionRepository.save(question);
-
-        // Add to user's answers
         author.addAnswer(savedAnswer);
+        questionRepository.save(question);
         userRepository.save(author);
 
-        // Publish event - CORRECTED SIGNATURE with 3 parameters
+        // Publish event with correct signature
         eventPublisher.publishAnswerCreated(
                 savedAnswer.getId(),
                 savedAnswer.getQuestion().getId(),

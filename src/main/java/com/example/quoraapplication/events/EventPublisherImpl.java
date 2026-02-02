@@ -1,5 +1,6 @@
 package com.example.quoraapplication.events;
 
+import com.example.quoraapplication.config.KafkaTopics;
 import com.example.quoraapplication.models.Comment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -27,15 +28,8 @@ public class EventPublisherImpl implements EventPublisher {
     // Event Publishing Methods
     // ============================================================================
 
-    /**
-     * Publish answer created event.
-     * Now includes authorId parameter.
-     */
     @Override
     public void publishAnswerCreated(Long answerId, Long questionId, Long authorId) {
-        log.info("Publishing AnswerCreated event for answer ID: {}, question ID: {}, author ID: {}",
-                answerId, questionId, authorId);
-
         try {
             Map<String, Object> event = new HashMap<>();
             event.put("answerId", answerId);
@@ -44,17 +38,14 @@ public class EventPublisherImpl implements EventPublisher {
             event.put("eventType", "ANSWER_CREATED");
             event.put("timestamp", LocalDateTime.now().toString());
 
-            kafkaTemplate.send("answer-events", event);
-
+            kafkaTemplate.send(KafkaTopics.ANSWER_EVENTS, event);
             log.info("AnswerCreated event published successfully");
         } catch (Exception e) {
             log.error("Error publishing AnswerCreated event", e);
         }
     }
 
-    /**
-     * Publish answer marked as accepted event.
-     */
+    // Update the publishAnswerMarkedAsAccepted method signature
     @Override
     public void publishAnswerMarkedAsAccepted(Long answerId, Long acceptedByUserId) {
         log.info("Publishing AnswerMarkedAsAccepted event for answer ID: {}, accepted by user ID: {}",
@@ -72,6 +63,7 @@ public class EventPublisherImpl implements EventPublisher {
             log.info("AnswerMarkedAsAccepted event published successfully");
         } catch (Exception e) {
             log.error("Error publishing AnswerMarkedAsAccepted event", e);
+            // Consider: retry logic, circuit breaker pattern
         }
     }
 

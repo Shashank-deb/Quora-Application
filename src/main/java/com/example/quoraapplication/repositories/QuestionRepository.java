@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
@@ -103,4 +104,51 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
            "ORDER BY q.createdAt DESC")
     Page<Question> findByUserIdWithAssociations(
             @Param("userId") Long userId, Pageable pageable);
+
+
+    /**
+     * Count questions by user
+     */
+    @Query("SELECT COUNT(q) FROM Question q WHERE q.user.id = :userId")
+    long countByUserId(@Param("userId") Long userId);
+
+    /**
+     * Find questions by multiple tag IDs with pagination
+     */
+    @Query("SELECT DISTINCT q FROM Question q " +
+            "LEFT JOIN FETCH q.user " +
+            "LEFT JOIN FETCH q.tags t " +
+            "WHERE t.id IN :tagIds " +
+            "ORDER BY q.createdAt DESC")
+    Page<Question> findByTagIds(
+            @Param("tagIds") Set<Long> tagIds, Pageable pageable);
+
+    /**
+     * Find questions with answers in date range
+     */
+    @Query("SELECT DISTINCT q FROM Question q " +
+            "LEFT JOIN FETCH q.user " +
+            "WHERE q.answerCount > 0 " +
+            "AND q.createdAt BETWEEN :startDate AND :endDate " +
+            "ORDER BY q.answerCount DESC")
+    Page<Question> findWithAnswersBetween(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            Pageable pageable);
+
+    /**
+     * Search with full-text capabilities
+     */
+    @Query(value =
+            "SELECT DISTINCT q FROM Question q " +
+                    "LEFT JOIN FETCH q.user " +
+                    "LEFT JOIN FETCH q.tags t " +
+                    "WHERE (" +
+                    "  LOWER(q.title) LIKE LOWER(CONCAT('%', :term, '%')) OR " +
+                    "  LOWER(q.content) LIKE LOWER(CONCAT('%', :term, '%')) OR " +
+                    "  LOWER(t.name) LIKE LOWER(CONCAT('%', :term, '%'))" +
+                    ") " +
+                    "ORDER BY q.createdAt DESC")
+    Page<Question> advancedSearch(
+            @Param("term") String term, Pageable pageable);
 }

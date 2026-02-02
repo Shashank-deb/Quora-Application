@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -122,4 +123,34 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query("SELECT COUNT(c) FROM Comment c " +
            "WHERE c.parentComment.id = :commentId")
     long countReplies(@Param("commentId") Long commentId);
+
+    /**
+     * Find comments created after a specific date
+     */
+    @Query("SELECT c FROM Comment c " +
+            "LEFT JOIN FETCH c.author " +
+            "WHERE c.createdAt > :since " +
+            "ORDER BY c.createdAt DESC")
+    Page<Comment> findRecentComments(
+            @Param("since") LocalDateTime since, Pageable pageable);
+
+    /**
+     * Find user's comments in a date range
+     */
+    @Query("SELECT c FROM Comment c " +
+            "LEFT JOIN FETCH c.author " +
+            "WHERE c.author.id = :userId AND c.createdAt BETWEEN :startDate AND :endDate " +
+            "ORDER BY c.createdAt DESC")
+    List<Comment> findUserCommentsBetween(
+            @Param("userId") Long userId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
+
+    /**
+     * Count total comments for an answer and its reply threads
+     */
+    @Query("SELECT COUNT(c) FROM Comment c " +
+            "WHERE c.answer.id = :answerId " +
+            "OR c.parentComment.answer.id = :answerId")
+    long countTotalCommentsThreaded(@Param("answerId") Long answerId);
 }
